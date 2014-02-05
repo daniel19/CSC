@@ -16,5 +16,18 @@ writeScr: ; label
     push eax 
 
     mov eax, [ebp+8] ; move string into eax register
-
+    cpm eax, 0
+    jne done_printing
+    mov esi, [ebp+12]
+print:
+    cmpb [esi],0
+    je done_printing
+    ;print code
+    jmp print
+done_printing:
+    pop eax
+    popf
+    pop ebp
+    ret
+    ;end code
 
