@@ -11,7 +11,7 @@ void writeScr( char *string, int row, int col);
 
 int main(){
     //Main function that calls clearScr() and writeScr() functions 
-    clearScr();
+    //clearScr();
     writeSrc("Hello  World", 12, 25);//Prints string onto screen after booting up
     //while(1);
     return 0;
