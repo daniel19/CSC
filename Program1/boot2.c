@@ -13,7 +13,7 @@ int main(){
     //Main function that calls clearScr() and writeScr() functions 
     clearScr();
     char string[12]="Hello World"; 
-    writeSrc(string, 12, 25);//Prints string onto screen after booting up
+    writeScr(string, 12, 25);//Prints string onto screen after booting up
     //while(1);
     return 0;
 }
