@@ -7,7 +7,7 @@
 
 //Forward declartions
 void clearScr();
-void writeScr( char *string, int row, int col);
+extern  void writeScr( char *string, int row, int col);
 
 int main(){
     //Main function that calls clearScr() and writeScr() functions 
@@ -19,7 +19,8 @@ int main(){
 
 void clearScr(){
     //Calling writing screen to clear the screen
-    for(int i = 0; i<  25;i++){
+    int i;
+    for(i = 0; i<25; i++){
         writeScr("            ",i,0);
     }
 }
