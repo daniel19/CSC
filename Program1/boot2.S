@@ -5,8 +5,8 @@
 
 #`.extern curProcess
 
-.global writeScr #write screen definition and declaration
-
+    .global writeScr #write screen definition and declaration
+   # .type writeScr, function
 
 writeScr: # label 
     push ebp #move ebp onto stack
