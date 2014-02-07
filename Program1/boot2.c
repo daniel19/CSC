@@ -14,15 +14,16 @@ int main(){
     clearScr();
     char string[12]="Hello World"; 
     writeScr(string, 12, 25);//Prints string onto screen after booting up
-   // while(1);
-    return 0;
+    while(1);
+   // return 0;
 }
 
 void clearScr(){
     //Calling writing screen to clear the screen
     int i=0;
-    for(i; i<25; i++){
-        writeScr("            ",i,0);
+    for(i; i<10;i++){
+        char *space = "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ";
+        writeScr(space,i,25);
     }
 }
 /*

@@ -1,12 +1,7 @@
 .intel_syntax noprefix
-#.set ERROR_MSG_LEN, 25
-#.set first_arg, bp+4
-#.equ, second_arg, bp+8
 
-#`.extern curProcess
+.global writeScr #write screen definition and declaration
 
-    .global writeScr #write screen definition and declaration
-   # .type writeScr, function
 
 writeScr: # label 
     push ebp #move ebp onto stack
@@ -14,37 +9,35 @@ writeScr: # label
     
     pushf # pushing flags register onto the stack
     push eax 
+    push ebx
+    push ecx
 
-    mov eax, [ebp+8] # move string into eax register
-    cmp eax, 0
-    jne done_printing
-    mov esi, [ebp+12] #address of row
-    mov ebx, [ebp+14] #address of column
-    
-    #testing video memory
-#    imul ecx, esi, 0x50 # 0x50 = 80
-#   add ecx,ebx
-#   imul ecx,0x02
-#   add ecx,0xB8000 #ecx contains offset
 
-    #place offset into edi
-#   mov esi, eax
-#   movsb es:[edi], ds:[esi] 
-#   movb es:[edi], 31
-    
-    
-#print:
- #   cmpb [esi],0
- #   je done_printing
- #  ;print code
- #  ;mov first char into video memory
- #  ;Video Memory begins at 0xB8000
+    mov esi, [ebp+8] # move string into esi register
+    cmp esi, 0
+    je done_printing
+    mov eax, 0xB8000
+    mov ebx, [ebp+12] #address of row
+    mov ecx, [ebp+16] #address of column
 
-#    jmp print
+    imul ebx,80
+    add ebx,ecx
+    imul ebx,2
+    add ebx, eax
+    mov edi, ebx
+    
+loop:
+    cmpb [esi],0
+    je done_printing
+    movsb es:[edi], ds:[esi]
+    movb es:[edi], 31
+    
+    inc edi
+    jmp loop
 done_printing:
+    pop ecx
+    pop ebx
     pop eax
     popf
     pop ebp
     ret
-   #;end code
-
