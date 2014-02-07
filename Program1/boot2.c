@@ -14,7 +14,7 @@ int main(){
     clearScr();
     char string[12]="Hello World"; 
     writeScr(string, 12, 25);//Prints string onto screen after booting up
-    //while(1);
+   // while(1);
     return 0;
 }
 

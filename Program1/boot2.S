@@ -22,12 +22,17 @@ writeScr: # label
     mov ebx, [ebp+14] #address of column
     
     #testing video memory
-    imul ecx, esi, 0x50 # 0x50 = 80
-    add ecx,ebx
-    imul ecx,0x02
-    add ecx,0xB8000
+#    imul ecx, esi, 0x50 # 0x50 = 80
+#   add ecx,ebx
+#   imul ecx,0x02
+#   add ecx,0xB8000 #ecx contains offset
 
-
+    #place offset into edi
+#   mov esi, eax
+#   movsb es:[edi], ds:[esi] 
+#   movb es:[edi], 31
+    
+    
 #print:
  #   cmpb [esi],0
  #   je done_printing
