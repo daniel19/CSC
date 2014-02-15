@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h> 
+#include <unistd.h>
 
 using namespace std;
 
@@ -69,7 +70,8 @@ int main(int argc, char* argv[])
 	listen(sockfd, 10);
 	
 	// Loop forever, handling connections.
-	while(1) 
+	bool keepRunning = true;
+    while(keepRunning) 
 	{
 		clilen = sizeof(cli_addr);
 		newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);

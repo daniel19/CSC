@@ -6,10 +6,14 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <unistd.h>
 
 using namespace std;
+//Function Prototypes
+void interface();
 
-int main(int argc, char* argv[]) 
+//int main(int argc, char* argv[]) 
+int main()
 {
 	int sockfd;
 	struct sockaddr_in server_addr;
@@ -18,7 +22,7 @@ int main(int argc, char* argv[])
 	char output[1024]; // Output message from server.
 	struct hostent* hent;
 	memset(output, '\0', 1024); // Clear the buffer.
-
+/*
 	// Check for correct commandline input.
 	if(argc < 3) 
 	{
@@ -27,8 +31,10 @@ int main(int argc, char* argv[])
 	}
 	
 	port = atoi(argv[2]);
+*/	
+    port = 15000;
 	
-	// Error check the port number.
+    // Error check the port number.
 	if(port <= 10000) 
 	{
 		cerr << "Port > 10000 required." << endl;
@@ -36,21 +42,24 @@ int main(int argc, char* argv[])
 	}
 	
 	// Error check the server name.
-	if((hent=gethostbyname(argv[1])) == NULL) 
-	{
+	//if((hent=gethostbyname(argv[1])) == NULL) 
+	if((hent=gethostbyname("localhost")) == NULL)
+    {
 		cerr << "Invalid host name." << endl;
 		exit(1);
 	}
-	
+
+
 	// Create the client socket.
 	if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
 	{
 		cerr << "Socket error." << endl;
 		exit(1);
 	}
-	
-	memset((void *) &server_addr, 0, sizeof(server_addr)); // Clear the server address structure.
-	
+	 // Clear the server address structure.
+    memset((void *) &server_addr, 0, sizeof(server_addr));
+    
+   	
 	// Set up the server address structure.
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr = *((struct in_addr *)hent->h_addr);
@@ -61,7 +70,11 @@ int main(int argc, char* argv[])
 		cerr << "Connect error." << endl;
 		exit(1);
 	}
-	cout <<"What message to send: ";
+	
+    //Start interface 
+    interface();
+    /*
+    cout <<"What message to send: ";
 	cin.getline(message,1024);
 	if((msgSize = send(sockfd, message, strlen(message), 0)) < 0) 
 	{
@@ -75,6 +88,39 @@ int main(int argc, char* argv[])
 	}
 	
 	cout << output << endl;		
-	close(sockfd);
+	*/
+    //keep waiting on user commands then close socket. 
+    close(sockfd);
+
+    
 }
 
+/*
+ * Protocols to send and recieve from server host endsystem.
+ *
+ * RECEIVING PROTOCOLS
+ * CTS:<filename> --> Receiving file contents 
+ * ERR:<message>  --> Error message
+ * PAS:<message>  --> Transfer was sucessful
+ * 
+ *
+ * Commands to implement
+ * GET:<filename>
+ * PUT:<filename>
+ * QUIT
+ *
+ * */
+
+//Funtion that handles all the user controls after socket
+//has conncted.
+void interface(){
+   bool stopWorking = false;
+   
+   //Display Main Menu
+    cout << "-----------------------------------\n";
+    cout << "| Use commands to access files from|\n";
+    cout << "| the server.                      |\n";
+    cout << "-----------------------------------\n";
+
+   while(!stopWorking){}
+}
