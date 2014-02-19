@@ -7,10 +7,11 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h>
+#include <fstream>
 
 using namespace std;
 //Function Prototypes
-void interface();
+void interface(char messeage[1024], int sockfd);
 
 //int main(int argc, char* argv[]) 
 int main()
@@ -72,22 +73,10 @@ int main()
 	}
 	
     //Start interface 
-    interface();
+    interface(message,sockfd);
     /*
     cout <<"What message to send: ";
 	cin.getline(message,1024);
-	if((msgSize = send(sockfd, message, strlen(message), 0)) < 0) 
-	{
-		cerr << "Send error." << endl;
-	}
-		
-	// Wait to receive response.
-	if((msgSize = recv(sockfd, output, 1023, 0)) < 0) 
-	{
-		cerr << "Receive error." << endl;
-	}
-	
-	cout << output << endl;		
 	*/
     //keep waiting on user commands then close socket. 
     close(sockfd);
@@ -113,14 +102,84 @@ int main()
 
 //Funtion that handles all the user controls after socket
 //has conncted.
-void interface(){
+void interface(char message[1024], int sockfd){
    bool stopWorking = false;
-   
+   char output[1024]; // Output message from server.
+    int msgSize;
    //Display Main Menu
     cout << "-----------------------------------\n";
     cout << "| Use commands to access files from|\n";
     cout << "| the server.                      |\n";
     cout << "-----------------------------------\n";
 
-   while(!stopWorking){}
+    string input ="";
+   // char buffer[1024];
+   while(!stopWorking){
+    getline(cin,input);
+    
+    //get first four characters of input
+    string command = input.substr(0,4);
+    
+    //switch(command){
+      //  case "GET:":
+	if(command == "PUT:"){        
+	          string filename = input.substr(4);
+              char* file = const_cast<char*>(filename.c_str());
+		  //call functions to retrieve file
+         
+         ifstream localFile(file);
+         localFile.seekg(0,localFile.end);
+         long size = localFile.tellg();
+         localFile.seekg(0);
+
+         char* buffer = new char[size];
+
+         if(!localFile.failbit){
+           localFile.read(buffer,size);
+         }else{
+            cout << "Unable to open file";
+            break;
+         }
+
+        
+          
+          //send msg to server for file.
+          //Send command message
+            message = "PUT";
+			if((msgSize = send(sockfd, message, strlen(message), 0)) < 0) 
+         	{
+        		cerr << "Send error." << endl;
+        	}
+	/*	
+        	// Wait to receive response.
+        	if((msgSize = recv(sockfd, output, 1023, 0)) < 0) 
+        	{
+	        	cerr << "Receive error." << endl;
+        	}
+	
+        	cout << output << endl;		
+	*/
+
+ 	}else if (command == "GET:"){
+		string filename = input.substr(4);
+                  // open and send file
+	}else {
+		//quit on anything else
+		stopWorking = true;	
+	}
+	/*
+                  break;
+        case "PUT:":
+                  string filename = input.substr(4);
+                  // open and send file
+                  break;
+        case "QUIT":
+                  stopWorking = true;
+                  break;
+        default:
+                  break;
+            
+    }*/
+        
+   }
 }

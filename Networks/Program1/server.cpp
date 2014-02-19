@@ -9,6 +9,10 @@
 
 using namespace std;
 
+//Protoypes
+void receivingFile();
+void sendingFile();
+
 void handleConnection(int clisock) 
 {
 	
@@ -20,7 +24,17 @@ void handleConnection(int clisock)
 	{
 		cerr << "Receive error." << endl;
 	}
-	
+    
+    if(buffer == "GET"){
+        //send repsonse for sending file
+       sendingFile(); 
+    }else if (buffer == "PUT"){
+        //send response for awaiting file
+        receivingFile();
+    }else{
+    }
+   
+    /*
 	cout << "Message received from client: " << buffer<<endl;
 	char response[1024];
 	sprintf(response, "Server: I received the following message:  %s", buffer);
@@ -29,7 +43,7 @@ void handleConnection(int clisock)
 	{
 		cerr << "Send error." << endl;
 	}
-	
+	*/
 	close(clisock);
 }
 
@@ -85,3 +99,18 @@ int main(int argc, char* argv[])
 	
 }
 
+/*
+ * Send File
+ */
+void sendingFile(){
+    
+}
+
+/*
+ * ReceivingFile
+ */
+void receivingFile(){
+ int bytes_read = 1;
+ int bytesSent;
+
+}
