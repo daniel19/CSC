@@ -13,8 +13,8 @@ using namespace std;
 //Function Prototypes
 void interface(char messeage[1024], int sockfd);
 
-//int main(int argc, char* argv[]) 
-int main()
+int main(int argc, char* argv[]) 
+//int main()
 {
 	int sockfd;
 	struct sockaddr_in server_addr;
