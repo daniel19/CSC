@@ -1,0 +1,126 @@
+.intel_syntax noprefix
+
+.global writeScr #write screen definition and declaration
+
+
+writeScr: # label 
+    push ebp #move ebp onto stack
+    mov ebp, esp #move esp to ebp
+    
+    pushf # pushing flags register onto the stack
+    push eax 
+    push ebx
+    push ecx
+
+
+    mov esi, [ebp+8] # move string into esi register
+    cmp esi, 0
+    je done_printing
+    mov eax, 0xB8000
+    mov ebx, [ebp+12] #address of row
+    mov ecx, [ebp+16] #address of column
+
+    imul ebx,80
+    add ebx,ecx
+    imul ebx,2
+    add ebx, eax
+    mov edi, ebx
+    
+loop:
+    cmpb [esi],0
+    je done_printing
+    movsb es:[edi], ds:[esi]
+    movb es:[edi], 31
+    
+    inc edi
+    jmp loop
+done_printing:
+    pop ecx
+    pop ebx
+    pop eax
+    popf
+    pop ebp
+    ret
+
+kWriteScr:
+    push ebp
+    mov ebp, esp
+    pushf
+    push eax
+    push ebx
+    push esi
+    push edi
+    push es
+    mov esi, [ebp+8]
+    mov eax, [ebp+12]
+    mov ebx, [ebp+16]
+    /*calculate offset
+        offset = 2(row*80 + column)*/
+    imul eax, 80
+    add eax, ebx
+    imul eax, 2
+    mov edi, eax
+
+_k_loop:
+    cmpb [esi], 0
+    je _k_out_bound
+    movsb
+    movb es:[edi], 31
+    inc edi
+    jmp _k_loop
+
+_k_out_bound:
+    pop es
+    pop edi
+    pop esi
+    pop ebx
+    pop eax
+    popf
+    pop ebp
+    ret
+
+segLoader:
+    push ebp
+    mov ebp, esp
+    pushf
+    push eax
+
+    // You should be able to guess how the parameters have been passed
+    mov eax, [ebp+12] // set up ds selector
+    mov ds, eax
+    // note that gs = fs = ds
+    mov eax, [ebp+20] // set up es selector
+    mov es, eax
+    mov eax, [ebp+20] // set up fs selector
+    mov fs, eax
+    mov eax, [ebp+20] // set up gs selector
+    mov gs, eax
+    /* The next two lines will only mess up the stack if the esp
+    now points to someplace different. However, we set it up so
+    that our new selector points the same place as the one set
+    up by the boot loader */
+    mov eax, [ebp+16] // set up ss selector
+    mov ss, eax
+    mov eax, [ebp+8] // now we load cs. can you guess how this works?
+    push eax
+    push OFFSET _loadcs
+    retf
+_loadcs: // we return here after retf
+    pop eax
+    popf
+    pop ebp
+    ret
+
+lgdtLoad:
+    push ebp
+    mov ebp, esp
+    pushf
+    push eax
+    /*load the pointer to the gdt to the hardware*/
+    mov eax, [ebp+8]
+    lgdt [eax]
+    pop eax
+    popf
+    pop ebp
+    ret
+
