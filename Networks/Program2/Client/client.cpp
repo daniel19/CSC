@@ -74,10 +74,10 @@ int main(int argc, char* argv[])
     cout << "Connecting to your Chat Server....." << endl;
     //Start interface 
     interface(message,sockfd);
-    /*
-    cout <<"What message to send: ";
-	cin.getline(message,1024);
-	*/
+
+
+
+
     //keep waiting on user commands then close socket. 
     close(sockfd);
 
@@ -108,15 +108,11 @@ void interface(char message[1024], int sockfd){
 
     //Send name to server
     name.insert(0,"name:");
-    if(( msgSize = send(sockfd, command, strlen(name), 0)) < 0) {
+    char* sendName = const_cast<char*>(name.c_str());
+    if(( msgSize = send(sockfd, sendName, strlen(sendName), 0)) < 0) {
             cerr << "Initial Error" << endl;
     }
-    
-    if(( msgSize = recv(sockfd, output, 0,1023))<0){
-        cerr << "Receive Error"<<endl;
-    }
-
-   
+  
    while(!stopWorking){
      string input ="";
     
@@ -146,13 +142,20 @@ void interface(char message[1024], int sockfd){
      string command = input.substr(0,4);
 
        if(command == "list:"){
+           char* sendCommand = const_cast<char*>(command.c_str());
            //Request available chat list
-           if(( msgSize = send(sockfd, command, strlen(command), 0)) < 0{
+           if(( msgSize = send(sockfd, sendCommand, strlen(sendCommand), 0)) < 0){
                    cerr << "Request Error" << endl;
            }
+            msgSize = 0;
+            
+           bool wait = false;
+           while(!wait){
+            if((msgSize = recv(sockfd, output, 1023, 0)) < 0){
+               // cerr << "Recieve Error" << endl;
+                cout << "waiting"<<endl;
+            }else{wait = true;}
 
-           if((msgSize = recv(sockfd, output, 1023, 0)) < 0){
-                cerr << "Recieve Error" << endl;
            }
             cout << output << endl;
        }else if(command == "whis:"){
