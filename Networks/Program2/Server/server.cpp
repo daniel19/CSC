@@ -7,13 +7,20 @@
 #include <netinet/in.h> 
 #include <unistd.h>
 #include <fstream>
+#include <vector>
+
+#include "chatPerson.h"
 
 using namespace std;
 
 //Protoypes
 void parseMessage(char* buffer, int clisock);
-    
-    
+void setupClient(char* buffer, int clisock);    
+
+//Global Variables
+vector<chatPerson> chatList;
+vector<string> messageList;
+
 void handleConnection(int clisock) 
 {
 	
@@ -28,14 +35,6 @@ void handleConnection(int clisock)
    
     parseMessage(buffer, clisock); 
     
-	cout << "Message received from client: " << buffer<<endl;
-	char response[1024];
-//	sprintf(response, "Server: I received the following message:  %s", buffer);
-	
-	if((msgSize = send(clisock, response, strlen(response), 0)) < 0) 
-	{
-		cerr << "Send error." << endl;
-	}
 	
 	close(clisock);
 }
@@ -94,14 +93,14 @@ int main(int argc, char* argv[])
 
 void parseMessage(char* buffer, int clisock)
 {
+    int msgSize;
     const int maxCommands = 6;
-    string commands[maxCommands]={ "whis:", "read:", 
-                                   "list:", "udpa:",
-                                   "send:", "quit"};
-
-    for(int i=0; i < maxCommands; i++){
-        commands[i] = const_cast<char*>(commands[i].c_str());
-    }
+    char name[maxCommands] = "name:";
+    char update[maxCommands] = "upda:";
+    char sendChar[maxCommands] = "send:";
+    char whisper[maxCommands] = "whis:";
+    char list[maxCommands] = "list:";
+    char read[maxCommands] = "read:";
     
     char* pch;
     pch = strchr(buffer,':');
@@ -110,7 +109,6 @@ void parseMessage(char* buffer, int clisock)
     
 
     char command[5];
-//    string s = "list:";
 //    char *commandS = const_cast<char*>(s.c_str());
     for(int j=0;j< 5;j++){
         command[j] = buffer[j];
@@ -119,16 +117,22 @@ void parseMessage(char* buffer, int clisock)
 	    }
     }
 	
+   
   //Perform actions based on the command sent by client. 
-  if(strcmp(command,commands[0])){
+  if (!strcmp(command, name)){
+      //name command sent
+      setupClient(buffer,clisock); 
+         
+   
+  }else if(!strcmp(command,whisper)){
       //whisper command sent
-  }else if (strcmp(command,commands[1])){
+  }else if (!strcmp(command,read)){
       //read command sent
-  }else if (strcmp(command,commands[2])){    
+  }else if (!strcmp(command,list)){    
       //list command sent
-  }else if (strcmp(command, commands[3])){
+  }else if (!strcmp(command, update)){
       //update command sent 
-  }else if (strcmp(command, commands[4])){
+  }else if (!strcmp(command, sendChar)){
       //send command sent
   }else{
       //remove sender from chat     
@@ -136,3 +140,28 @@ void parseMessage(char* buffer, int clisock)
 
 }
 
+void setupClient(char* buffer, int clisock){
+    int msgSize;
+    //colon at position 4
+    char name[1024];
+    for(int i = 5; i<strlen(buffer); i++){
+        name[i-5] = buffer[i]; 
+    }
+    
+    string chatName(name);
+
+    chatPerson client(chatName, clisock);
+    
+    chatList.push_back(client);
+    
+    string response = "You are now connected to the chat server.";
+      char* rep = const_cast<char*>(response.c_str());
+
+      if((msgSize = send(clisock,rep,strlen(rep),0))<0){
+          cerr << "Send error" << endl;
+      }else{
+          cout << msgSize << endl;
+          cout << "Client:" << client.getName() << " has connected."<<endl;
+      }
+      
+}

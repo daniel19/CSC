@@ -7,12 +7,22 @@
 using namespace std;
 
 class chatPerson{
-    private:
+    protected:
         string name;
         int clientSocket;
     public:
+        static int total;
+        
+        //Constructuors
         chatPerson(string, int);
+        chatPerson();
+
+        //Getter Functions
         string getName();
         int getSocket();
 
+        //Setter Functions
+        void setName(string n);
+        void setSocket(int s);
 };
+

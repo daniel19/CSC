@@ -1,29 +1,29 @@
 #include "chatPerson.h"
-
+int chatPerson::total = 0;
 //Constructors
-void chatPerson::chatPerson(string n, int s){
+chatPerson::chatPerson(string n, int s){
     name = n;
     clientSocket = s;
     total++;
 }
-void chatPerson::chatPerosn(){
+chatPerson::chatPerson(){
     total++;
 }
 
 //Getter Methods
-int getSocket(){
+int chatPerson::getSocket(){
     return clientSocket;
 }
 
-string getName(){
+string chatPerson::getName(){
     return name;
 }
 
 //Setter Methods
-void setSocket(int s){
+void chatPerson::setSocket(int s){
     clientSocket = s;
 }
 
-void setName(string n){
+void chatPerson::setName(string n){
     name = n;
 }
