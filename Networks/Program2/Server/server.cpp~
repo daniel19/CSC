@@ -9,6 +9,7 @@
 #include <fstream>
 #include <vector>
 #include <sys/poll.h>
+#include <errno.h>
 
 #include "chatPerson.h"
 
@@ -23,11 +24,6 @@ vector<chatPerson> chatList;
 vector<string> messageList;
 #define MAX_CONNECTIONS 5
 
- struct pollfd{
-        int fileDescriptor;
-        short requestedEvents;
-        short returnedEvents;
-    };
 
 
 bool handleConnection(int clisock) 
@@ -55,7 +51,7 @@ bool handleConnection(int clisock)
 int main(int argc, char* argv[]) 
 {
 	
-    struct pllfd ufds[MAX_CONNECTIONS];
+    struct pollfd ufds[MAX_CONNECTIONS];
 
     // Set up the socket.
 
@@ -88,25 +84,54 @@ int main(int argc, char* argv[])
 	
 	// Listen on the socket, queue 5 incoming connections.
 	listen(sockfd, 10);
+    
+    //Setup poll structure
+    memset(ufds,0, sizeof(ufds));
+    ufds[0].fd = 0;
+    ufds[0].events = POLLIN;
+
 
 
     /*use poll here to manage multiple connections*/
 	// Loop forever, handling connections.
-	bool keepRunning = true;
+    bool keepRunning = true;
     bool acceptClients = true;
-    while(acceptClients) 
+   /*	 while(acceptClients) 
 	{
-		clilen = sizeof(cli_addr);
-		newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-		if(newsockfd < 0) 
-		{
-			cerr << "Accept error." << endl;
-			exit(1);
-		}
-		while(keepRunning){
+				while(keepRunning){
          keepRunning = handleConnection(newsockfd);
         }
-      }
+      }*/
+
+    do{
+        if(poll(ufds,chatList.size(),-1)<0){
+            perror("poll error");
+            break;
+        }
+        for(int i =0; i < chatList.size()+1; i++){
+            if(ufds[i].events == 0){
+                continue;
+            }
+            if(ufds[i].events != POLLIN){
+                cout << "Error in do while.--!=POLLIN" << endl;
+               keepRunning = false;
+               break;
+            }
+            if(ufds[i].fd == 0){
+                //Accept to all incoming connections that are queued
+                do{
+                    clilen = sizeof(cli_addr);
+		            newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+	            	if(newsockfd < 0) 
+		            {
+			            cerr << "Accept error." << endl;
+			            exit(1);
+		            }           
+
+                }while(acceptClients);
+            }
+        }
+    }while(keepRunning);
 	
 }
 

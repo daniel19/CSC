@@ -9,6 +9,7 @@
 #include <fstream>
 #include <vector>
 #include <sys/poll.h>
+#include <errno.h>
 
 #include "chatPerson.h"
 
@@ -23,11 +24,6 @@ vector<chatPerson> chatList;
 vector<string> messageList;
 #define MAX_CONNECTIONS 5
 
- struct pollfd{
-        int fileDescriptor;
-        short requestedEvents;
-        short returnedEvents;
-    };
 
 
 bool handleConnection(int clisock) 
@@ -90,9 +86,9 @@ int main(int argc, char* argv[])
 	listen(sockfd, 10);
     
     //Setup poll structure
-    memsete(ufds,0, sizeof(ufds));
-    ufds[0].fileDescriptor = 0;
-    ufds[0].requestedEvents = POLLIN;
+    memset(ufds,0, sizeof(ufds));
+    ufds[0].fd = 0;
+    ufds[0].events = POLLIN;
 
 
 
@@ -102,14 +98,7 @@ int main(int argc, char* argv[])
     bool acceptClients = true;
    /*	 while(acceptClients) 
 	{
-		clilen = sizeof(cli_addr);
-		newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-		if(newsockfd < 0) 
-		{
-			cerr << "Accept error." << endl;
-			exit(1);
-		}
-		while(keepRunning){
+				while(keepRunning){
          keepRunning = handleConnection(newsockfd);
         }
       }*/
@@ -120,15 +109,29 @@ int main(int argc, char* argv[])
             break;
         }
         for(int i =0; i < chatList.size()+1; i++){
-            if(ufds[i].requestedEvents == 0){
+            if(ufds[i].events == 0){
                 continue;
             }
-            if(ufds[i].requestedEvents != POLLIN){
-                cout << "Error in do while" << endl;
-                exit(1);
+            if(ufds[i].events != POLLIN){
+                cout << "Error in do while.--!=POLLIN" << endl;
+               keepRunning = false;
+               break;
             }
+            if(ufds[i].fd == 0){
+                //Accept to all incoming connections that are queued
+                do{
+                    clilen = sizeof(cli_addr);
+		            newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+	            	if(newsockfd < 0) 
+		            {
+			            cerr << "Accept error." << endl;
+			            exit(1);
+		            }           
 
-    }while();
+                }while(acceptClients);
+            }
+        }
+    }while(keepRunning);
 	
 }
 
