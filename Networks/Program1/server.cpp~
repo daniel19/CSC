@@ -10,10 +10,9 @@
 using namespace std;
 
 //Protoypes
-void receivingFile();
-void sendingFile();
 
-void handleConnection(int clisock) 
+
+bool handleConnection(int clisock) 
 {
 	
 	int msgSize;
@@ -22,29 +21,24 @@ void handleConnection(int clisock)
 	
 	if((msgSize = recv(clisock, buffer, 1015, 0)) < 0) 
 	{
-		cerr << "Receive error." << endl;
+		//	cerr << "Receive error." << endl;
+		return false;
 	}
     
-    if(buffer == "GET"){
-        //send repsonse for sending file
-       sendingFile(); 
-    }else if (buffer == "PUT"){
-        //send response for awaiting file
-        receivingFile();
-    }else{
-    }
    
-    /*
-	cout << "Message received from client: " << buffer<<endl;
+   
+   
+	cout << "Message received from client: " << buffer<< " from socket: " << clisock << endl;
 	char response[1024];
-	sprintf(response, "Server: I received the following message:  %s", buffer);
+	sprintf(response, "Server: I received the following message:  %s - from socket: %d", buffer, clisock);
 	
 	if((msgSize = send(clisock, response, strlen(response), 0)) < 0) 
 	{
 		cerr << "Send error." << endl;
 	}
-	*/
-	close(clisock);
+	cout << "message size: " << msgSize << endl;
+	return true;
+	//close(clisock);
 }
 
 
@@ -83,20 +77,21 @@ int main(int argc, char* argv[])
 	// Listen on the socket, queue 5 incoming connections.
 	listen(sockfd, 10);
 	
+		clilen = sizeof(cli_addr);
+		newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
 	// Loop forever, handling connections.
 	bool keepRunning = true;
     while(keepRunning) 
 	{
-		clilen = sizeof(cli_addr);
-		newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+		
 		if(newsockfd < 0) 
 		{
 			cerr << "Accept error." << endl;
 			exit(1);
 		}
-		handleConnection(newsockfd);
+		keepRunning = handleConnection(newsockfd);
 	}
-	
+	close(newsockfd);
 }
 
 /*

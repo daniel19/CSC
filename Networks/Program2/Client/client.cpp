@@ -13,8 +13,8 @@ using namespace std;
 //Function Prototypes
 void interface(char messeage[1024], int sockfd);
 
-int main(int argc, char* argv[]) 
-//int main()
+//int main(int argc, char* argv[]) 
+int main()
 {
 	int sockfd;
 	struct sockaddr_in server_addr;
@@ -24,15 +24,15 @@ int main(int argc, char* argv[])
 	struct hostent* hent;
 	memset(output, '\0', 1024); // Clear the buffer.
 	// Check for correct commandline input.
-	if(argc < 3) 
+/*	if(argc < 3) 
 	{
 		cerr << "Usage: ./client [server name] [port]" << endl;
 		exit(1);
 	}
 	
 	port = atoi(argv[2]);
-	
- // port = 15000;
+*/	
+     port = 15000;
 	
     // Error check the port number.
 	if(port <= 10000) 
@@ -42,8 +42,8 @@ int main(int argc, char* argv[])
 	}
 	
 	// Error check the server name.
-	if((hent=gethostbyname(argv[1])) == NULL) 
-	//if((hent=gethostbyname("localhost")) == NULL)
+	//if((hent=gethostbyname(argv[1])) == NULL) 
+	if((hent=gethostbyname("localhost")) == NULL)
     {
 		cerr << "Invalid host name." << endl;
 		exit(1);
@@ -100,7 +100,7 @@ void interface(char message[1024], int sockfd){
     cout << "-----------------------------------\n";
     
     cout << "Type 'README' after entering your name to access readme file. " << endl;
-    
+   cout << "socket: " << sockfd << endl; 
 
     cout << endl << "PLEASE ENTER YOUR NAME." << endl;
     string name = "";
@@ -112,8 +112,18 @@ void interface(char message[1024], int sockfd){
     if(( msgSize = send(sockfd, sendName, strlen(sendName), 0)) < 0) {
             cerr << "Initial Error" << endl;
     }
-  
+ 
+    if((recv(sockfd, output, 1024, 0)<0)){
+        cerr << "Error Connecting" << endl;
+    }else{
+        cout <<  output << endl;
+        memset(output,'\0',sizeof(output));
+    }
+
    while(!stopWorking){
+     cout << "________Ready for commands________"<< endl;
+       
+       
      string input ="";
     
      getline(cin,input);
@@ -132,40 +142,39 @@ void interface(char message[1024], int sockfd){
          }
       
          localFile.close();
-
-         cout << "Enter in command" << endl;
      }
    
-     cin.clear();
-     getline(cin, input);
+     //cin.clear();
+     //getline(cin, input);
      //Process Commands   
-     string command = input.substr(0,4);
-
+     string command = input.substr(0,5);
+     
        if(command == "list:"){
            char* sendCommand = const_cast<char*>(command.c_str());
            //Request available chat list
-           if(( msgSize = send(sockfd, sendCommand, strlen(sendCommand), 0)) < 0){
+           if(( msgSize = send(sockfd, sendCommand,  strlen(sendCommand), 0)) < 0){
                    cerr << "Request Error" << endl;
            }
-            msgSize = 0;
-            
-           bool wait = false;
-           while(!wait){
-            if((msgSize = recv(sockfd, output, 1023, 0)) < 0){
-               // cerr << "Recieve Error" << endl;
-                cout << "waiting"<<endl;
-            }else{wait = true;}
+        //cout << msgSize << endl;
+           cout << "List of present chatters:" <<endl;
+           //cout << "socket in list: " << sockfd << endl;
+            if((recv(sockfd, output, 1024, 0)<0)){
+                cerr << "Error Connecting" << endl;
+            }else{
+                cout <<  output << endl;
+            }       
 
-           }
-            cout << output << endl;
+           
+           
        }else if(command == "whis:"){
             //Whisper to one client. 
 
        }else if(command == "QUIT"){
 		//quit on anything else
 		stopWorking = true;	
-	}
+	}else{
+        cerr << "Command Not Found" << endl << endl;
    }
-    
+   } 
    
 }

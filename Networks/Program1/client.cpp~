@@ -73,13 +73,21 @@ int main()
 	}
 	
     //Start interface 
-    interface(message,sockfd);
-    /*
-    cout <<"What message to send: ";
+    //interface(message,sockfd);
+	bool keep = true;
+    while(keep){
+    	
+	cout <<"What message to send: ";
 	cin.getline(message,1024);
-	*/
+	if(!strcmp(message,"quit")){
+		keep = false;
+		cout << "quitting......." << endl << endl;
+	} 
+      cout << send(sockfd, message, strlen(message),0) << endl;
+      cout << recv(sockfd, output, strlen(output),0) << endl;
+    }
     //keep waiting on user commands then close socket. 
-    close(sockfd);
+   close(sockfd);
 
     
 }
@@ -166,9 +174,9 @@ void interface(char message[1024], int sockfd){
         while(size > 0){
             int bytes_written = write(sockfd, buffer, size);
             if(bytes_written <= 0){
-                error("error writing to socket\n");
+               // error("error writing to socket\n");
             }
-            size -= bytes_written
+            size -= bytes_written;
 
         }
         

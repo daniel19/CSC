@@ -1,14 +1,12 @@
 server: server.o chat.o
-	g++ server.o chat.o -o server
+	g++ -g -O0 server.o chat.o -o server
 
 chat.o:chatPerson.cpp chatPerson.h
-	g++ -c chatPerson.cpp -o chat.o
+	g++ -c -g -O0 chatPerson.cpp -o chat.o
 
 server.o: server.cpp
-	g++ -c server.cpp -o server.o
+	g++ -c -g -O0 server.cpp -o server.o
 
-client:
-	g++ ../Client/client.cpp -o ../Client/client
 clean:
 	rm *.o
 

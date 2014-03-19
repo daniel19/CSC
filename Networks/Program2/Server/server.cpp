@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <fstream>
 #include <vector>
+#include <sys/poll.h>
 
 #include "chatPerson.h"
 
@@ -20,45 +21,58 @@ void setupClient(char* buffer, int clisock);
 //Global Variables
 vector<chatPerson> chatList;
 vector<string> messageList;
+#define MAX_CONNECTIONS 5
 
-void handleConnection(int clisock) 
+ struct pollfd{
+        int fileDescriptor;
+        short requestedEvents;
+        short returnedEvents;
+    };
+
+
+bool handleConnection(int clisock) 
 {
 	
 	int msgSize;
 	char buffer[1016]; // 
 	memset(buffer, '\0', 1016); // Clear the buffer.
-	
+
 	if((msgSize = recv(clisock, buffer, 1015, 0)) < 0) 
 	{
-		cerr << "Receive error." << endl;
+		//cerr << "Receive error.-in handleConnection()" << endl;
+       
 	}
-   
+     
+    if(!strcmp(buffer, "QUIT")){return false;}
+
     parseMessage(buffer, clisock); 
-    
+    return true;
 	
-	close(clisock);
+	//close(clisock);
 }
 
 
 int main(int argc, char* argv[]) 
 {
 	
-	// Set up the socket.
-	
+    struct pollfd ufds[MAX_CONNECTIONS];
+
+    // Set up the socket.
+
 	int sockfd, newsockfd;
 	unsigned int clilen;
 	
 	// Structures for client and server addresses.
 	struct sockaddr_in server_addr, cli_addr;
 	
-	// Create the server socket.
-	if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
-	{
-		cerr << "Socket error." << endl;
-		exit(1);
-	}
-	
-	memset((void *) &server_addr, 0, sizeof(server_addr)); // Clear the server address structure.
+        // Create the server socket.
+	    if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
+	    {
+		    cerr << "Socket error." << endl;
+		    exit(1);
+	    }
+        
+    	memset((void *) &server_addr, 0, sizeof(server_addr)); // Clear the server address structure.
 	
 	// Set up the server address structure.
 	server_addr.sin_family = AF_INET;
@@ -74,10 +88,19 @@ int main(int argc, char* argv[])
 	
 	// Listen on the socket, queue 5 incoming connections.
 	listen(sockfd, 10);
-	
+    
+    //Setup poll structure
+    memsete(ufds,0, sizeof(ufds));
+    ufds[0].fileDescriptor = 0;
+    ufds[0].requestedEvents = POLLIN;
+
+
+
+    /*use poll here to manage multiple connections*/
 	// Loop forever, handling connections.
-	bool keepRunning = true;
-    while(keepRunning) 
+    bool keepRunning = true;
+    bool acceptClients = true;
+   /*	 while(acceptClients) 
 	{
 		clilen = sizeof(cli_addr);
 		newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
@@ -86,8 +109,26 @@ int main(int argc, char* argv[])
 			cerr << "Accept error." << endl;
 			exit(1);
 		}
-		handleConnection(newsockfd);
-	}
+		while(keepRunning){
+         keepRunning = handleConnection(newsockfd);
+        }
+      }*/
+
+    do{
+        if(poll(ufds,chatList.size(),-1)<0){
+            perror("poll error");
+            break;
+        }
+        for(int i =0; i < chatList.size()+1; i++){
+            if(ufds[i].requestedEvents == 0){
+                continue;
+            }
+            if(ufds[i].requestedEvents != POLLIN){
+                cout << "Error in do while" << endl;
+                exit(1);
+            }
+
+    }while();
 	
 }
 
@@ -117,25 +158,75 @@ void parseMessage(char* buffer, int clisock)
 	    }
     }
 	
-   
-  //Perform actions based on the command sent by client. 
+   //Perform actions based on the command sent by client. 
   if (!strcmp(command, name)){
       //name command sent
-      setupClient(buffer,clisock); 
-         
+      setupClient(buffer,clisock);        
    
   }else if(!strcmp(command,whisper)){
       //whisper command sent
   }else if (!strcmp(command,read)){
       //read command sent
   }else if (!strcmp(command,list)){    
-      //list command sent
+     cout << "list command sent" << endl;
+      //char outputList[1024];
+      string outputList;
+      for(int i =0; i < chatList.size(); i++){
+         outputList.append(chatList[i].getName());
+         outputList.append("\0");
+         //cout << outputList << endl;
+      }
+      char* sendList = const_cast<char*>(outputList.c_str());
+
+      if((send(clisock, sendList, strlen(sendList),0))<0){
+          cerr << "Send Error"<<endl;
+      }
+
   }else if (!strcmp(command, update)){
       //update command sent 
+      // send the user the entire message list
+      string currentMessages;
+      for (int i = 0; i < messageList.size(); i++){
+          currentMessages.append(messageList[i]);
+          currentMessages.append("\0");
+      }
+      char* sendMessages = const_cast<char*>(currentMessages.c_str());
+
+      if((send(clisock, sendMessages, strlen(sendMessages),0)) < 0){
+          cerr << "Send Error-update" << endl;
+      }
+
+
   }else if (!strcmp(command, sendChar)){
-      //send command sent
+      //send command was sent
+      //compare clisock to socket in chatPerson vector 
+      string typingPerson; 
+      for(int i=0; i < chatList.size(); i++){
+          if(clisock == chatList[i].getSocket()){
+            typingPerson = chatList[i].getSocket();
+          }
+      }
+    char message[1024];
+    for(int i = 5; i<strlen(buffer); i++){
+        message[i-5] = buffer[i];
+    }
+    string myMessage(message);
+    typingPerson.append(":");
+    typingPerson.append(myMessage);
+    
+    cout << "--------Incoming Message--------" << endl;
+    cout << typingPerson << endl << endl;
+
+
   }else{
-      //remove sender from chat     
+      //remove sender from chat   
+        for(int i = 0; i< chatList.size(); i++){
+            if(clisock == chatList[i].getSocket()){
+                cout << "Client:" << chatList[i].getName() << " has disconnected." << endl;
+                chatList.erase(chatList.begin() + i-1);
+            }
+        }
+
   }
 
 }
@@ -149,19 +240,19 @@ void setupClient(char* buffer, int clisock){
     }
     
     string chatName(name);
-
     chatPerson client(chatName, clisock);
-    
     chatList.push_back(client);
     
     string response = "You are now connected to the chat server.";
       char* rep = const_cast<char*>(response.c_str());
-
+      
+      //  cout << clisock << endl;
       if((msgSize = send(clisock,rep,strlen(rep),0))<0){
           cerr << "Send error" << endl;
       }else{
-          cout << msgSize << endl;
+     //     cout << msgSize << endl;
           cout << "Client:" << client.getName() << " has connected."<<endl;
+          cout << "Chat lobby count:" << chatList.size() << endl;
       }
       
 }
