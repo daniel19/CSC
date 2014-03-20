@@ -27,3 +27,17 @@ void chatPerson::setSocket(int s){
 void chatPerson::setName(string n){
     name = n;
 }
+
+void chatPerson::addWhisper(string w){
+    whisperVector.push_back(w);    
+}
+
+char* chatPerson::readWhisper(){
+    string whisperMessages;
+    for(int i =0; i < whisperVector.size(); i++){
+        whisperMessages.append(whisperVector[i]);
+        whisperMessages.append("\0");
+    }
+    char* sendWhisper = const_cast<char*>(whisperMessages.c_str());
+    return sendWhisper;
+}

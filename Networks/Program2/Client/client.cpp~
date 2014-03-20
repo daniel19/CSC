@@ -24,14 +24,14 @@ int main()
 	struct hostent* hent;
 	memset(output, '\0', 1024); // Clear the buffer.
 	// Check for correct commandline input.
-	if(argc < 3) 
+/*	if(argc < 3) 
 	{
 		cerr << "Usage: ./client [server name] [port]" << endl;
 		exit(1);
 	}
 	
-//	port = atoi(argv[2]);
-	
+	port = atoi(argv[2]);
+*/	
      port = 15000;
 	
     // Error check the port number.
@@ -168,7 +168,8 @@ void interface(char message[1024], int sockfd){
            
        }else if(command == "whis:"){
             //Whisper to one client. 
-
+       }else if(command == "send:"){
+           //send to main chat list
        }else if(command == "QUIT"){
 		//quit on anything else
 		stopWorking = true;	

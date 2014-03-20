@@ -10,6 +10,7 @@
 #include <vector>
 #include <sys/poll.h>
 #include <errno.h>
+#include <sys/ioctl.h>
 
 #include "chatPerson.h"
 
@@ -35,11 +36,14 @@ bool handleConnection(int clisock)
 
 	if((msgSize = recv(clisock, buffer, 1015, 0)) < 0) 
 	{
-		//cerr << "Receive error.-in handleConnection()" << endl;
+        if(errno != EWOULDBLOCK){
+            perror(" main recv failed");
+            return false;
+        }
        
 	}
      
-    if(!strcmp(buffer, "QUIT")){return false;}
+   // if(!strcmp(buffer, "QUIT")){return false;}
 
     parseMessage(buffer, clisock); 
     return true;
@@ -55,8 +59,10 @@ int main(int argc, char* argv[])
 
     // Set up the socket.
 
-	int sockfd, newsockfd;
+    int sockfd =-1, newsockfd = -1,socketDescriptor =-1;
 	unsigned int clilen;
+    int on = 1;
+   // int listen_sd = -1;
 	
 	// Structures for client and server addresses.
 	struct sockaddr_in server_addr, cli_addr;
@@ -67,7 +73,21 @@ int main(int argc, char* argv[])
 		    cerr << "Socket error." << endl;
 		    exit(1);
 	    }
-        
+        fcntl(sockfd, F_SETFL, O_NONBLOCK); 
+        /*if(socketDescriptor = setsockopt(sockfd,SOL_SOCKET,SO_REUSEADDR,
+                    (char*)&on,sizeof(on))<0)
+        {
+            perror("setsockopt failed");
+            close(sockfd);
+        }
+    cout << "Here we are TOO MUCH" << endl;
+        if(socketDescriptor = ioctl(sockfd, FIONBIO,(char*)on)<0){
+           cout << "sockfd:" << sockfd << " sockDes:" << socketDescriptor << endl;
+            perror("ioctl failed");
+          //  close(sockfd);
+          //  exit(1);
+        }*/
+
     	memset((void *) &server_addr, 0, sizeof(server_addr)); // Clear the server address structure.
 	
 	// Set up the server address structure.
@@ -87,7 +107,7 @@ int main(int argc, char* argv[])
     
     //Setup poll structure
     memset(ufds,0, sizeof(ufds));
-    ufds[0].fd = 0;
+    ufds[0].fd = sockfd;
     ufds[0].events = POLLIN;
 
 
@@ -104,7 +124,7 @@ int main(int argc, char* argv[])
       }*/
 
     do{
-        if(poll(ufds,chatList.size(),-1)<0){
+        if(poll(ufds,chatList.size()+1,3*60)<0){
             perror("poll error");
             break;
         }
@@ -117,19 +137,35 @@ int main(int argc, char* argv[])
                keepRunning = false;
                break;
             }
-            if(ufds[i].fd == 0){
+            if(ufds[i].fd == sockfd){
                 //Accept to all incoming connections that are queued
                 do{
                     clilen = sizeof(cli_addr);
 		            newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
 	            	if(newsockfd < 0) 
 		            {
-			            cerr << "Accept error." << endl;
-			            exit(1);
+			            if(errno != EWOULDBLOCK){
+                            perror("accept() failed.");
+			                keepRunning = false;
+                        }
+                        break; 
 		            }           
+                    
+                    ufds[chatList.size() +1].fd = newsockfd;
+                    ufds[chatList.size() +1].events = POLLIN;
 
+                    if(newsockfd == -1){
+                        acceptClients =false;
+                    }
                 }while(acceptClients);
-            }
+            }else{
+                //recieve incoming on current socket
+                bool handling = true;
+                while(handling){
+                    handling = handleConnection(ufds[i].fd);
+                }
+           }
+
         }
     }while(keepRunning);
 	
@@ -168,6 +204,20 @@ void parseMessage(char* buffer, int clisock)
    
   }else if(!strcmp(command,whisper)){
       //whisper command sent
+      //grab whats in buffer;
+      char* pch2;
+      pch2 = strchr(buffer,':');
+      int pos = 0;
+      pos = pch2 - buffer+1;
+
+      char *recpName;
+      for(int k=0; k<position; k++){
+        recpName[k] = buffer[k];
+        if(k == position-1){
+            recpName[k+1] == '\0';
+        }
+      }
+    cout << recpName << endl << endl;
   }else if (!strcmp(command,read)){
       //read command sent
   }else if (!strcmp(command,list)){    
@@ -206,7 +256,7 @@ void parseMessage(char* buffer, int clisock)
       string typingPerson; 
       for(int i=0; i < chatList.size(); i++){
           if(clisock == chatList[i].getSocket()){
-            typingPerson = chatList[i].getSocket();
+            typingPerson = chatList[i].getName();
           }
       }
     char message[1024];
@@ -222,6 +272,9 @@ void parseMessage(char* buffer, int clisock)
 
 
   }else{
+
+      //clean up ufds struct and close socket
+
       //remove sender from chat   
         for(int i = 0; i< chatList.size(); i++){
             if(clisock == chatList[i].getSocket()){

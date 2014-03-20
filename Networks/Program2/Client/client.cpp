@@ -168,6 +168,10 @@ void interface(char message[1024], int sockfd){
            
        }else if(command == "whis:"){
             //Whisper to one client. 
+       }else if(command == "send:"){
+           //send to main chat list
+       }else if(command == "upda:"){
+            //request update of current chat
 
        }else if(command == "QUIT"){
 		//quit on anything else
