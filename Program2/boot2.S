@@ -2,6 +2,11 @@
 
 .global writeScr, kWriteScr, segLoader, lgdtLoad #write screen definition and declaration
 
+#global Program3
+.global go, schedule
+
+#external variables Program 3
+.extern dequeue, enqueue, currPCB
 
 writeScr: # label 
     push ebp #move ebp onto stack
@@ -124,3 +129,17 @@ lgdtLoad:
     pop ebp
     ret
 
+go:
+	call dequeue
+	mov [currPCB], eax
+	mov esp, [eax]
+	mov ss, [eax+4]
+	pop gs
+	pop fs
+	pop es
+	pop ds
+	popad
+	iret
+
+schedule:
+	pushf

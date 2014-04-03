@@ -19,13 +19,14 @@ void p1();
 void p2();
 void p3();
 void p4();
+void p5();
 void p6();
 void p7();
 void p8();
 void p9();
 void p10();
 
-int createProcess(uint32_t ds, uint32_t ss, uint32_t topOfStack, uint32_t processEntry);
+int createProcess(uint32_t ds, uint32_t ss, uint32_t topOfStack, uint32_t cs, uint32_t processEntry);
 int* allocStack();
 
 //Global
@@ -84,25 +85,23 @@ int main(){
     int *newStack = allocStack();
     createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p1);
 
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p1)
+    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p2);
 
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p2)
+    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p3);
 
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p3)
+    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p4);
 
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p4)
+    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p5);
 
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p5)
+    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p6);
 
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p6)
+    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p7);
 
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p7)
+    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p8);
 
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p8)
+    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p9);
 
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p9)
-
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p10)
+    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p10);
 
 
     go();
@@ -284,7 +283,7 @@ int createProcess(uint32_t ds, uint32_t ss, uint32_t topOfStack, uint32_t cs, ui
 	
 	*stack = processEntry;
 	stack --;
-
+	int i,j;
 	for(i = 0; i< 9; i++)
 	{	
 		*stack = 0;
@@ -301,5 +300,6 @@ int createProcess(uint32_t ds, uint32_t ss, uint32_t topOfStack, uint32_t cs, ui
 	pcb->ss = ss;
 	pcb->esp = (uint32_t)stack;
 	enqueue(pcb);
+}
 }
 
