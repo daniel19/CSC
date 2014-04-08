@@ -1,20 +1,14 @@
-//boot2.c is the c driver for our first project
-//Created 2.3.2014 by Daniel Brown 
-//CSC 4100 - Operating Systems for Professor Mike Rogers
-#include <stdio.h>
 #include "gdt.h"
 #include "queue.h"
 #include "pcb.h"
 
-//Forward declartions
 void clearScr();
-void writeScr( char *string, int row, int col);
-void segLoad(uint32_t code, uint32_t data, uint32_t stack, uint32_t video);
-void lgdtLoader(gdt_ptr_t *pgdt);
+void writeScr(char *string, int row, int col);
 void protectedWrite(char *string, int row, int col);
+void segLoader(uint32_t code, uint32_t data, uint32_t stack, 
+        uint32_t video);
+void lgdtLoad(gdt_ptr_t *pgdt);
 void protectedClear();
-
-//processor funtions for Program 3 submission
 void p1();
 void p2();
 void p3();
@@ -25,97 +19,93 @@ void p7();
 void p8();
 void p9();
 void p10();
-
 int createProcess(uint32_t ds, uint32_t ss, uint32_t topOfStack, uint32_t cs, uint32_t processEntry);
 int* allocStack();
 
-//Global
-gdt_entry_t gdt[5];
-gdt_ptr_t gdtPointer;
 
-//Global variables for Program 3 submission
+/*Global variables*/
 int STACK_SIZE = 1024;
+gdt_entry_t gdt[5]; //Global descriptor table
+gdt_ptr_t prgLgdt; //pointer to  ^
 int stacks[10][1024];
-int nextStack =0;
+int nextStack = 0;
 
-int main(){
-    //Main function that calls clearScr() and writeScr() functions 
-    clearScr(); 
-    writeScr("Initialiazing Operating System", 0, 0);//Prints string onto screen after booting up
-    writeScr("Setting up Operating System Descriptors....", 1,0);
-
-    initGDTEntry(&gdt[0],0,0,0,0); //Null
+int main()
+{
+    clearScr();
+    writeScr("Initializing OS", 0, 0);
+    writeScr("Setting up OS descriptors...", 1, 0);
+    
+    //Set up the GDT
+    initGDTEntry(&gdt[0], 0, 0, 0, 0);                  //NULL
     initGDTEntry(&gdt[1], 0, 640*1024-1, 0x9A, 0x40);   //Code
     initGDTEntry(&gdt[2], 0, 640*1024-1, 0x92, 0x40);   //Data
     initGDTEntry(&gdt[3], 0, 640*1024-1, 0x92, 0x40);   //Stack
     initGDTEntry(&gdt[4], 0xB8000, 80*25*2-1, 0x92, 0x40); //Video
-	
-    gdtPointer.lim = sizeof(gdt) - 1;
-    gdtPointer.base = (uint32_t)gdt;
 
-    lgdtLoad(/*(gdt_entry_t*)*/ &gdtPointer);
+    prgLgdt.lim = sizeof(gdt) - 1;
+    prgLgdt.base = (uint32_t)gdt;
+
+    lgdtLoad(/*(gdt_entry_t*)*/ &prgLgdt);
     
     //Load the segment registers
     segLoader(8, 16, 24, 32);
 
     //write to the screen in protected mode
-    protectedWrite("DONE", 2, 28);
+    protectedWrite("done.", 2, 28);
     int i;
     int j;
-    int k;
-
     for(i = 3; i < 25; i++)
-    {   
-       /* for( k=0; k < 624000; k++){
-        }*/
+    {
         for(j = 0; j < 80; j++)
         {
             protectedWrite("*", i, j);
         }
     }
     protectedClear();
-    protectedWrite("Running ten processess..............",0,0);
-
-
-
-    //queues
+    protectedWrite("Running ten processes. . .",0,0);
+    
+    //initialize queue for use
     queues.head = 0;
     queues.tail = 9;
 
-    int *newStack = allocStack();
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p1);
+    int *s = allocStack();
+    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (s + STACK_SIZE), (uint32_t) 8, (uint32_t) p1);
 
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p2);
+    s = allocStack();
+    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (s + STACK_SIZE), (uint32_t) 8, (uint32_t) p2);
 
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p3);
+    s = allocStack();
+    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (s + STACK_SIZE), (uint32_t) 8, (uint32_t) p3);
 
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p4);
+    s = allocStack();
+    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (s + STACK_SIZE), (uint32_t) 8, (uint32_t) p4);
 
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p5);
+    s = allocStack();
+    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (s + STACK_SIZE), (uint32_t) 8, (uint32_t) p5);
 
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p6);
+    s = allocStack();
+    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (s + STACK_SIZE), (uint32_t) 8, (uint32_t) p6);
 
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p7);
+    s = allocStack();
+    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (s + STACK_SIZE), (uint32_t) 8, (uint32_t) p7);
 
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p8);
+    s = allocStack();
+    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (s + STACK_SIZE), (uint32_t) 8, (uint32_t) p8);
 
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p9);
+    s = allocStack();
+    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (s + STACK_SIZE), (uint32_t) 8, (uint32_t) p9);
 
-    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (newStack + STACK_SIZE), (uint32_t) 8, (uint32_t) p10);
-
+    s = allocStack();
+    createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (s + STACK_SIZE), (uint32_t) 8, (uint32_t) p10);
 
     go();
-
     while(1);
-   
 }
 
-
-//Protyped Methods
 void clearScr()
 {
-    int i;
-    int j;
+    int i, j;
     for(i = 0; i < 25; i++)
     {
         for(j = 0; j < 80; j++)
@@ -125,17 +115,20 @@ void clearScr()
     }
 }
 
+
 void protectedClear()
 {
-	int i,j;
-	for(i=0; i <25; i++){
-		for(j=0; j<80;j++){
-			protectedWrite(" ",i,j);
-		}
-	}
+    int i, j;
+    for(i = 0; i < 25; i++)
+    {
+        for(j = 0; j < 80; j++)
+        {
+            protectedWrite(" ", i, j);
+        }
+    }
 }
-	
-//Process functions
+
+//Processes
 void p1()
 {
     int i = 0;
@@ -266,43 +259,48 @@ void p10()
     }
 }
 
-int createProcess(uint32_t ds, uint32_t ss, uint32_t topOfStack, uint32_t cs, uint32_t processEntry)
-{
-	uint32_t *stack = (uint32_t *) topOfStack;
-	stack --;
-	
-	*stack = 0;
-	stack --;
-
-	
-	*stack = cs;
-	stack --;
-
-	
-	*stack = processEntry;
-	stack --;
-	int i,j;
-	for(i = 0; i< 9; i++)
-	{	
-		*stack = 0;
-		stack --;
-	}
-
-	for(j= 0; j <3; j++)
-	{
-		*stack = ds;
-		stack --;
-	}
-
-	pcb_t *pcb = allocatePCB();
-	pcb->ss = ss;
-	pcb->esp = (uint32_t)stack;
-	enqueue(pcb);
-}
-
 int* allocStack()
 {
-	nextStack++;
-	return stacks[nextStack-1];
+    nextStack++;
+    return stacks[nextStack-1];
 }
 
+int createProcess(uint32_t ds, uint32_t ss, uint32_t topOfStack, uint32_t cs, uint32_t processEntry)
+{
+    uint32_t *st = (uint32_t *)topOfStack;
+    st--;
+    *st = 0;
+    st--;
+    *st = cs;
+    st--;
+    *st = processEntry;
+    st--;
+    *st = 0;    //ebp
+    st--;
+    *st = 0;    //esp
+    st--;
+    *st = 0;    //edi
+    st--;
+    *st = 0;    //esi
+    st--;
+    *st = 0;    //edx
+    st--;
+    *st = 0;    //ecx
+    st--;
+    *st = 0;    //ebx
+    st--;
+    *st = 0;    //eax
+    st--;
+    *st = ds;   //ds
+    st--;
+    *st = ds;   //es
+    st--;
+    *st = ds;   //fs
+    st--;
+    *st = ds;   //gs
+
+    pcb_t *pcb = allocatePCB();
+    pcb->ss = ss;
+    pcb->esp = (uint32_t)st;
+    enqueue(pcb);   //add pointer to queue
+}
