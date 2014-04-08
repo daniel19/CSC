@@ -1,6 +1,6 @@
 .intel_syntax noprefix
 
-.global writeScr, kWriteScr, segLoader, lgdtLoad #write screen definition and declaration
+.global writeScr, protectedWrite, segLoader, lgdtLoad #write screen definition and declaration
 
 #global Program3
 .global go, schedule
@@ -47,7 +47,7 @@ done_printing:
     pop ebp
     ret
 
-kWriteScr:
+protectedWrite:
     push ebp
     mov ebp, esp
     pushf
@@ -65,6 +65,8 @@ kWriteScr:
     add eax, ebx
     imul eax, 2
     mov edi, eax
+    mov eax, 32
+    mov es, eax
 
 _k_loop:
     cmpb [esi], 0
@@ -100,13 +102,9 @@ segLoader:
     mov fs, eax
     mov eax, [ebp+20] // set up gs selector
     mov gs, eax
-    /* The next two lines will only mess up the stack if the esp
-    now points to someplace different. However, we set it up so
-    that our new selector points the same place as the one set
-    up by the boot loader */
     mov eax, [ebp+16] // set up ss selector
     mov ss, eax
-    mov eax, [ebp+8] // now we load cs. can you guess how this works?
+    mov eax, [ebp+8] 
     push eax
     push OFFSET _loadcs
     retf
@@ -121,7 +119,6 @@ lgdtLoad:
     mov ebp, esp
     pushf
     push eax
-    /*load the pointer to the gdt to the hardware*/
     mov eax, [ebp+8]
     lgdt [eax]
     pop eax
@@ -143,3 +140,27 @@ go:
 
 schedule:
 	pushf
+	push cs 
+	push OFFSET _afterSwitch
+	pushad
+	push ds
+	push es
+	push fs
+	push gs
+	mov eax,[currPCB]
+	mov [eax], esp
+	push eax
+	call enqueue
+	call dequeue
+	mov [currPCB], eax
+	mov esp, [eax]
+	mov ss, [eax+4]
+	pop gs
+	pop fs
+	pop es
+	pop ds
+	popad
+	iret
+_afterSwitch:
+	ret
+	
