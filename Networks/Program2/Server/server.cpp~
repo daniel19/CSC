@@ -148,7 +148,7 @@ int main(int argc, char* argv[])
                     closeConnection = 0;
 
                     while(true){
-                        success = recv(fds[i].fd, inputBuffer, sizeof(inputBufer),0);
+                        success = recv(fds[i].fd, inputBuffer, sizeof(inputBuffer),0);
                         if(success < 0){
                             if(errno != EWOULDBLOCK){
                                 cerr << "Receive failed." << endl;
@@ -163,7 +163,7 @@ int main(int argc, char* argv[])
                     }
 
                     if(closeConnection){
-                        close([fds[i].fd);
+                        close(fds[i].fd);
                         fds[i].fd = -1;
                         compress = 1;
 
@@ -190,7 +190,9 @@ int main(int argc, char* argv[])
                 close(fds[i].fd);
             }
         }
-        return 0;
+       }
+    }
+    return 0;
 }
 
 void parseMessage(char* buffer, int clisock)

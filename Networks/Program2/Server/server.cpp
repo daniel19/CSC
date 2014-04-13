@@ -23,33 +23,8 @@ void setupClient(char* buffer, int clisock);
 //Global Variables
 vector<chatPerson> chatList;
 vector<string> messageList;
-#define MAX_CONNECTIONS 5
 
 
-
-bool handleConnection(int clisock) 
-{
-	
-	int msgSize;
-	char buffer[1016]; // 
-	memset(buffer, '\0', 1016); // Clear the buffer.
-
-	if((msgSize = recv(clisock, buffer, 1015, 0)) < 0) 
-	{
-        if(errno != EWOULDBLOCK){
-            perror(" main recv failed");
-            return false;
-        }
-       
-	}
-     
-   // if(!strcmp(buffer, "QUIT")){return false;}
-
-    parseMessage(buffer, clisock); 
-    return true;
-	
-	//close(clisock);
-}
 
 
 int main(int argc, char* argv[]) 
@@ -190,7 +165,9 @@ int main(int argc, char* argv[])
                 close(fds[i].fd);
             }
         }
-        return 0;
+       }
+    }
+    return 0;
 }
 
 void parseMessage(char* buffer, int clisock)
