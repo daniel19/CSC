@@ -54,121 +54,143 @@ bool handleConnection(int clisock)
 
 int main(int argc, char* argv[]) 
 {
-	
-    struct pollfd ufds[MAX_CONNECTIONS];
+    int success, on=1, serverSocket=-1, newSocket=1;
+    int compress=0, closeConnection;
+    int timeout, nfds=1, end=0, currentSize=0, i, j, port;
+    char inputBuffer[1024], outputBuffer[1024];
+    struct sockaddr_in addr;
+    struct pollfd fds[200];
 
-    // Set up the socket.
+    if(argc<2){
+        cerr << "Usuage: ./server [port]" << endl;
+        exit(1);
+    }
 
-    int sockfd =-1, newsockfd = -1,socketDescriptor =-1;
-	unsigned int clilen;
-    int on = 1;
-   // int listen_sd = -1;
-	
-	// Structures for client and server addresses.
-	struct sockaddr_in server_addr, cli_addr;
-	
-        // Create the server socket.
-	    if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
-	    {
-		    cerr << "Socket error." << endl;
-		    exit(1);
-	    }
-        fcntl(sockfd, F_SETFL, O_NONBLOCK); 
-        /*if(socketDescriptor = setsockopt(sockfd,SOL_SOCKET,SO_REUSEADDR,
-                    (char*)&on,sizeof(on))<0)
-        {
-            perror("setsockopt failed");
-            close(sockfd);
-        }
-    cout << "Here we are TOO MUCH" << endl;
-        if(socketDescriptor = ioctl(sockfd, FIONBIO,(char*)on)<0){
-           cout << "sockfd:" << sockfd << " sockDes:" << socketDescriptor << endl;
-            perror("ioctl failed");
-          //  close(sockfd);
-          //  exit(1);
-        }*/
+    port = atoi(argv[1]);
+    if(port < 15000){
+        cerr << "Port should be greater than 15000."<<endl;
+        exit(1);
+    }
 
-    	memset((void *) &server_addr, 0, sizeof(server_addr)); // Clear the server address structure.
-	
-	// Set up the server address structure.
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	server_addr.sin_port = htons(15000);
-	
-	// Bind the socket to the server address and port.
-	if(bind(sockfd, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0) 
-	{
-		cerr << "Bind error.";
-		exit(1);
-	}
-	
-	// Listen on the socket, queue 5 incoming connections.
-	listen(sockfd, 10);
-    
-    //Setup poll structure
-    memset(ufds,0, sizeof(ufds));
-    ufds[0].fd = sockfd;
-    ufds[0].events = POLLIN;
+    serverSocket = socket(AF_INET, SOCK_STREAM,0);
 
+    if(serverSocket<0){
+        cerr << "Error Creating the server socket connection." << endl;
+        exit(1);
+    }
 
+    success = setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on));
+    if(success < 0){
+        cerr << "Error making socket reusable." << endl;
+        exit(1);
+    }
 
-    /*use poll here to manage multiple connections*/
-	// Loop forever, handling connections.
-    bool keepRunning = true;
-    bool acceptClients = true;
-   /*	 while(acceptClients) 
-	{
-				while(keepRunning){
-         keepRunning = handleConnection(newsockfd);
-        }
-      }*/
+    success = ioctl(serverSocket, FIONBIO, (char *)&on);
+    if (success < 0){
+        cerr << "Error setting socket to non blocking." << endl;
+    }
 
-    do{
-        if(poll(ufds,chatList.size()+1,3*60)<0){
-            perror("poll error");
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    addr.sin_port = htons(port);
+    bind(serverSocket, (struct sockaddr *)&addr, sizeof(addr));
+
+    success = listen(serverSocket, 32);
+    if (success < 0){
+        cerr << "Error listening on socket." << endl;
+    }
+
+    memset(fds, 0, sizeof(fds));
+
+    fds[0].fd = serverSocket;
+    fds[0].events = POLLIN;
+
+    timeout = 1000;
+
+    while(end == 0){
+        memset(inputBuffer, '\0',sizeof(inputBuffer));
+        memset(outputBuffer, '\0', sizeof(outputBuffer));
+
+        success = poll(fds, nfds, timeout);
+
+        if(success <0){
+            cerr <<"Error polling sockets" << endl;
             break;
-        }
-        for(int i =0; i < chatList.size()+1; i++){
-            if(ufds[i].events == 0){
-                continue;
-            }
-            if(ufds[i].events != POLLIN){
-                cout << "Error in do while.--!=POLLIN" << endl;
-               keepRunning = false;
-               break;
-            }
-            if(ufds[i].fd == sockfd){
-                //Accept to all incoming connections that are queued
-                do{
-                    clilen = sizeof(cli_addr);
-		            newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-	            	if(newsockfd < 0) 
-		            {
-			            if(errno != EWOULDBLOCK){
-                            perror("accept() failed.");
-			                keepRunning = false;
+        }else if (success == 0){
+            continue;
+        }else{
+            currentSize = nfds;
+            for(i = 0; i < currentSize; i++){
+                if(fds[i].revents ==0)
+                    continue;
+                if(fds[i].revents != POLLIN){
+                    cerr << "Error on client socket: " << fds[i].revents;
+                    end = 1;
+                    break;
+                }else if(fds[i].fd == serverSocket){
+                    while(1){
+                        newSocket = accept(serverSocket, NULL, NULL);
+                        if(newSocket <0){
+                            if(errno != EWOULDBLOCK){
+                                cerr << "Error in accepting connection" <<endl;
+                                end = 1;
+                            }
+                            break;
+
                         }
-                        break; 
-		            }           
-                    
-                    ufds[chatList.size() +1].fd = newsockfd;
-                    ufds[chatList.size() +1].events = POLLIN;
-
-                    if(newsockfd == -1){
-                        acceptClients =false;
+                
+                        fds[nfds].fd = newSocket;
+                        fds[nfds].events = POLLIN;
+                        nfds++;
                     }
-                }while(acceptClients);
-            }else{
-                //recieve incoming on current socket
-                bool handling = true;
-                while(handling){
-                    handling = handleConnection(ufds[i].fd);
+                }else{
+                    closeConnection = 0;
+
+                    while(true){
+                        success = recv(fds[i].fd, inputBuffer, sizeof(inputBuffer),0);
+                        if(success < 0){
+                            if(errno != EWOULDBLOCK){
+                                cerr << "Receive failed." << endl;
+                                closeConnection = 1;
+                            }
+                            break;
+                        }else{
+                            //send data to parese function
+                            parseMessage(inputBuffer, fds[i].fd);
+                        }
+                
+                    }
+
+                    if(closeConnection){
+                        close(fds[i].fd);
+                        fds[i].fd = -1;
+                        compress = 1;
+
                 }
-           }
+
+             }  
+    
+        }
+        if(compress){
+            compress = 0;
+            for(i=0; i <nfds; i++){
+                if(fds[i].fd == -1){
+                    for(j=i; j<nfds; j++){
+                        fds[j].fd = fds[j+1].fd;
+                    }
+                    nfds--;
+                }
+            }
 
         }
-    }while(keepRunning);
-	
+
+        for(i=0; i<nfds; i++){
+            if(fds[i].fd >=0){
+                close(fds[i].fd);
+            }
+        }
+        return 0;
 }
 
 void parseMessage(char* buffer, int clisock)

@@ -155,9 +155,9 @@ void interface(char message[1024], int sockfd){
            if(( msgSize = send(sockfd, sendCommand,  strlen(sendCommand), 0)) < 0){
                    cerr << "Request Error" << endl;
            }
-        //cout << msgSize << endl;
+       
            cout << "List of present chatters:" <<endl;
-           //cout << "socket in list: " << sockfd << endl;
+      
             if((recv(sockfd, output, 1024, 0)<0)){
                 cerr << "Error Connecting" << endl;
             }else{
@@ -167,12 +167,61 @@ void interface(char message[1024], int sockfd){
            
            
        }else if(command == "whis:"){
-            //Whisper to one client. 
+            //Whisper to one client.
+            string receiverName;
+            cout << "Enter in the single client name:";
+            getline(cin,receiverName);
+
+            string message;
+            cout << endl << "Enter in the message:";
+            getline(cin, message);
+
+            char* sendCommand = const_cast<char*>(command.c_str());
+            receiverName.insert(receiverName.length(),":");
+            strcpy(sendCommand,receiverName.c_str());
+            strcpy(sendCommand, message.c_str());
+
+            send(sockfd, sendCommand, strlen(sendCommand),0);
+            recv(sockfd, output, 1024,0);
+
+            cout << output << endl;
+            memset(output,'\0',sizeof(ouptut));
+
        }else if(command == "send:"){
-           //send to main chat list
+          cout << endl<< "Enter in desired Message:"; 
+          string message; 
+          getline(cin, message);
+           
+          //send to main chat list
+          char* sendCommand = const_cast<char*>(command.c_str());
+          strcpy(sendCommand, message.c_str());
+          send(sockfd, sendCommand, strlen(sendCommand),0);
+
+          recv(sockfd, output, 1024, 0);
+          cout << endl << output << endl;
+
+          memset(output,'\0', sizeof(output));
+       }else if(command == "upda:"){
+            //request update of current chat
+            char* sendCommand = const_cast<char*>(command.c_str());
+            send(sockfd, sendCommand, strlen(sendCommand),0);
+            recv(sockfd, output, 1024,0);
+            cout << output << endl;
+
+            memset(output,'\0',sizeof(output));
        }else if(command == "QUIT"){
 		//quit on anything else
-		stopWorking = true;	
+		stopWorking = true;
+        char* sendCommand = const_cast<char*>(command.c_str());
+
+        //send quit to server
+        send(sockfd, sendCommand, strlen(sendComand), 0);
+
+        //send user to quit session
+       // send(sockfd, sendName, strlen(sendNam),0);
+        recv(sockfd, output, 1024, 0);
+        cout << output << endl;
+        
 	}else{
         cerr << "Command Not Found" << endl << endl;
    }
