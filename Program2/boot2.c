@@ -25,7 +25,8 @@ int* allocStack();
 
 void lidt(idt_ptr_t *pidt);
 void initIDT();
-
+void schedule();
+void go();
 
 /*Global variables*/
 int STACK_SIZE = 1024;
@@ -323,4 +324,26 @@ int createProcess(uint32_t ds, uint32_t ss, uint32_t topOfStack, uint32_t cs, ui
     pcb->ss = ss;
     pcb->esp = (uint32_t)st;
     enqueue(pcb);   //add pointer to queue
+}
+
+void initIDT(){
+    int i = 0;
+    while(i < 32)
+    {
+        initIDTEntry(&idt[i], (uint32_t)defaultIntHand, 8, 0x8e);
+        i++;
+    }
+
+    initIDTEntry(&idt[32], (uint32_t)schedule, 8, 0x8e);
+
+    i = 33;
+    while(i < 256)
+    {
+        initIDTEntry(&idt[i], 0, 8, 0);
+        i++;
+    }
+
+    myIDT.limit = sizeof(idt) - 1;
+    myIDT.base = (uint32_t)idt;
+    lidt(&myIDT);
 }
