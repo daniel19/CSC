@@ -27,6 +27,7 @@ void lidt(idt_ptr_t *pidt);
 void initIDT();
 void schedule();
 void go();
+void setupPIC();
 
 /*Global variables*/
 int STACK_SIZE = 1024;
@@ -37,6 +38,7 @@ int nextStack = 0;
 
 idt_entry_t idt[256];
 idt_ptr_t myIDT;
+int timer =0;
 
 int main()
 {
@@ -79,7 +81,12 @@ int main()
 
     //setup IDT
     initIDT();
+	
+     //temp hold on ISR    
+     asm("cli");
 
+    //setup PIC
+    setupPIC();
     int *s = allocStack();
     createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (s + STACK_SIZE), (uint32_t) 8, (uint32_t) p1);
 
@@ -346,4 +353,19 @@ void initIDT(){
     myIDT.limit = sizeof(idt) - 1;
     myIDT.base = (uint32_t)idt;
     lidt(&myIDT);
+}
+
+void setupPIC(){
+    outport(0x20, 0x11);
+    outport(0xA0, 0x11);
+    outport(0x21, 0x20);
+    outport(0xA1, 0x28);
+    outport(0x21, 0x04);
+    outport(0xA1, 0x02);
+    outport(0x21, 0x01);
+    outport(0xA1, 0x01);
+    outport(0x21, 0x0);
+    outport(0xA1, 0x0);
+    outport(0x21, 0xfe);
+    outport(0xa1, 0xff);
 }
