@@ -12,6 +12,7 @@
 #include <errno.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
+#include <sstream>
 #include "chatPerson.h"
 
 using namespace std;
@@ -255,11 +256,11 @@ void parseMessage(char* buffer, int clisock)
       int pos = 0;
       pos = pch2 - buffer+1;
 
-      char *recpName;
+      char *recpName = nullptr;
       for(int k=0; k<position; k++){
         recpName[k] = buffer[k];
         if(k == position-1){
-            recpName[k+1] == '\0';
+            recpName[k+1] = '\0';
         }
       }
     cout << recpName << endl << endl;
@@ -270,8 +271,13 @@ void parseMessage(char* buffer, int clisock)
       //char outputList[1024];
       string outputList;
       for(int i =0; i < chatList.size(); i++){
+          stringstream ss;
+          ss << i+1;
+          
+          outputList.append(ss.str());
+          outputList.append(":");
          outputList.append(chatList[i].getName());
-         outputList.append("\0");
+         outputList.append("\n");
          //cout << outputList << endl;
       }
       char* sendList = const_cast<char*>(outputList.c_str());
