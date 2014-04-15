@@ -1,6 +1,7 @@
 #include "gdt.h"
 #include "queue.h"
 #include "pcb.h"
+#include "idt.h"
 
 void clearScr();
 void writeScr(char *string, int row, int col);
@@ -22,6 +23,9 @@ void p10();
 int createProcess(uint32_t ds, uint32_t ss, uint32_t topOfStack, uint32_t cs, uint32_t processEntry);
 int* allocStack();
 
+void lidt(idt_ptr_t *pidt);
+void initIDT();
+
 
 /*Global variables*/
 int STACK_SIZE = 1024;
@@ -29,6 +33,9 @@ gdt_entry_t gdt[5]; //Global descriptor table
 gdt_ptr_t prgLgdt; //pointer to  ^
 int stacks[10][1024];
 int nextStack = 0;
+
+idt_entry_t idt[256];
+idt_ptr_t myIDT;
 
 int main()
 {
@@ -68,6 +75,9 @@ int main()
     //initialize queue for use
     queues.head = 0;
     queues.tail = 9;
+
+    //setup IDT
+    initIDT();
 
     int *s = allocStack();
     createProcess((uint32_t) 16, (uint32_t) 24, (uint32_t) (s + STACK_SIZE), (uint32_t) 8, (uint32_t) p1);
@@ -138,7 +148,8 @@ void p1()
         msg[13] =  (i + '0');
         protectedWrite(msg, 5, 0);
         i = (i + 1) % 10;
-        schedule();
+        //schedule();
+	asm("int $32");
     }
 }
 
@@ -151,7 +162,8 @@ void p2()
         msg[13] = (i + '0');
         protectedWrite(msg, 6, 0);
         i = (i + 1) % 10;
-        schedule();
+         //schedule();
+	asm("int $32");
     }
 }
 
@@ -164,7 +176,8 @@ void p3()
         msg[13] = (i + '0');
         protectedWrite(msg, 7, 0);
         i = (i + 1) % 10;
-        schedule();
+         //schedule();
+	asm("int $32");
     }
 }
 
@@ -177,7 +190,8 @@ void p4()
         msg[13] = (i + '0');
         protectedWrite(msg, 8, 0);
         i = (i + 1) % 10;
-        schedule();
+         //schedule();
+	asm("int $32");
     }
 }
 
@@ -190,7 +204,8 @@ void p5()
         msg[13] = (i + '0');
         protectedWrite(msg, 9, 0);
         i = (i + 1) % 10;
-        schedule();
+        //schedule();
+	asm("int $32");
     }
 }
 
@@ -203,7 +218,8 @@ void p6()
         msg[13] = (i + '0');
         protectedWrite(msg, 10, 0);
         i = (i + 1) % 10;
-        schedule();
+         //schedule();
+	asm("int $32");
     }
 }
 
@@ -216,7 +232,8 @@ void p7()
         msg[13] = (i + '0');
         protectedWrite(msg, 11, 0);
         i = (i + 1) % 10;
-        schedule();
+         //schedule();
+	asm("int $32");
     }
 }
 
@@ -229,7 +246,8 @@ void p8()
         msg[13] = (i + '0');
         protectedWrite(msg, 12, 0);
         i = (i + 1) % 10;
-        schedule();
+        //schedule();
+	asm("int $32");
     }
 }
 
@@ -242,7 +260,8 @@ void p9()
         msg[13] = (i + '0');
         protectedWrite(msg, 13, 0);
         i = (i + 1) % 10;
-        schedule();
+        //schedule();
+	asm("int $32");
     }
 }
 
@@ -255,7 +274,8 @@ void p10()
         msg[13] = (i + '0');
         protectedWrite(msg, 14, 0);
         i = (i + 1) % 10;
-        schedule();
+        //schedule();
+	asm("int $32");
     }
 }
 

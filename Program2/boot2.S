@@ -1,6 +1,6 @@
 
 .intel_syntax noprefix
-.global writeScr, protectedWrite, segLoader, lgdtLoad, go, schedule
+.global writeScr, protectedWrite, segLoader, lgdtLoad, go, schedule, lidt, outport
 .extern dequeue, enqueue, currPCB
 
 
@@ -152,3 +152,29 @@ schedule:
     iret
 _afterSwitch:
     ret
+
+lidt:
+	push ebp
+	mov ebp, esp
+	pushf
+	push eax
+	mov eax, [ebp+8]
+	lidt[eax]
+	pop eax
+	popf
+	pop ebp
+ 	ret
+
+outport:
+	push ebp
+	mov ebp, esp
+	pushf
+	push dx
+	mov al, [ebp+12]
+	mov dx, [ebp +8]
+	out dx, al
+	pop dx
+	pop ax
+	popf
+	pop ebp
+	ret
