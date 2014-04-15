@@ -1,7 +1,7 @@
 
 .intel_syntax noprefix
 .global writeScr, protectedWrite, segLoader, lgdtLoad, go, schedule, lidt, outport
-.extern dequeue, enqueue, currPCB
+.extern dequeue, enqueue, currPCB, timer
 
 
 writeScr:
@@ -128,38 +128,47 @@ go:
     iret
 
 schedule:
-    pushf
-    push cs
-    push OFFSET _afterSwitch
-    pushad
-    push ds
-    push es
-    push fs
-    push gs
-    mov eax, [currPCB]
-    mov [eax], esp
-    push eax
-    call enqueue
-    call dequeue
-    mov [currPCB], eax
-    mov esp, [eax]
-    mov ss, [eax+4]
-    pop gs
-    pop fs
-    pop es
-    pop ds
-    popad
-    iret
-_afterSwitch:
-    ret
+	push eax
+	mov al, 0x20
+	out 0x20, al
+	inc DWORD PTR timer
+	cmp DWORD PTR timer,3
+	je _switch
+	pop eax
+	iret
 
+_switch:
+	mov DWORD PTR timer, 0
+	pop eax
+	pushad
+	push ds
+	push es
+	push fs
+	push gs
+	mov eax, [currPCB]
+	mov [eax], esp
+	push eax
+	call enqueue
+	call dequeue
+	mov [currPCB], eax
+	mov esp, [eax]
+	mov ss, [eax+4]
+	pop gs
+	pop fs
+	pop es
+	pop ds
+	popad
+	iret
+
+_afterSwitch:
+	ret
 lidt:
 	push ebp
 	mov ebp, esp
 	pushf
 	push eax
 	mov eax, [ebp+8]
-	lidt[eax]
+	lidt [eax]
 	pop eax
 	popf
 	pop ebp
@@ -171,7 +180,7 @@ outport:
 	pushf
 	push dx
 	mov al, [ebp+12]
-	mov dx, [ebp +8]
+	mov dx, [ebp+8]
 	out dx, al
 	pop dx
 	pop ax
