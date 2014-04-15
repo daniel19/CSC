@@ -13,73 +13,44 @@ using namespace std;
 //Function Prototypes
 void interface(char messeage[1024], int sockfd);
 
-//int main(int argc, char* argv[]) 
-int main()
+int main(int argc, char* argv[]) 
+//int main()
 {
-	int sockfd;
-	struct sockaddr_in server_addr;
-	int msgSize, port;
-	char message[1024];
-	char output[1024]; // Output message from server.
-	struct hostent* hent;
-	memset(output, '\0', 1024); // Clear the buffer.
-	// Check for correct commandline input.
-/*	if(argc < 3) 
-	{
-		cerr << "Usage: ./client [server name] [port]" << endl;
-		exit(1);
-	}
-	
-	port = atoi(argv[2]);
-*/	
-     port = 15000;
-	
-    // Error check the port number.
-	if(port <= 10000) 
-	{
-		cerr << "Port > 10000 required." << endl;
-		exit(1);
-	}
-	
-	// Error check the server name.
-	//if((hent=gethostbyname(argv[1])) == NULL) 
-	if((hent=gethostbyname("localhost")) == NULL)
-    {
-		cerr << "Invalid host name." << endl;
-		exit(1);
-	}
+    int clientSocket, port;
+    struct sockaddr_in server_address;
+    struct hostent *hent;
 
+    if(argc< 3){
+        cerr << "Usage: ./client [server name] [port]" << endl;
+        exit(1);
 
-	// Create the client socket.
-	if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
-	{
-		cerr << "Socket error." << endl;
-		exit(1);
-	}
-	 // Clear the server address structure.
-    memset((void *) &server_addr, 0, sizeof(server_addr));
+    }
+
+    port = atoi(argv[2]);
+    if(port < 15000){
+        cerr << "Port # must be greater/equal to 15000" << endl;
+    }
+
+    if((hent = gethostbyname(argv[1])) == NULL){
+        cerr << "Invalid hostname" << endl;
+    }
     
-   	
-	// Set up the server address structure.
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_addr = *((struct in_addr *)hent->h_addr);
-	server_addr.sin_port = htons(port);
+    if((clientSocket = socket(AF_INET, SOCK_STREAM,0)) < 0){
+            cerr << "Socket creation error" << endl;
+    }
 
-	if(connect(sockfd, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0) 
-	{
-		cerr << "Connect error." << endl;
-		exit(1);
-	}
+    memset((void*) &server_address, 0, sizeof(server_address));
+    server_address.sin_family = AF_INET;
+    server_address.sin_addr = *((struct in_addr *)hent->h_addr);
+    server_address.sin_port = htons(port);
 
-    cout << "Connecting to your Chat Server....." << endl;
-    //Start interface 
-    interface(message,sockfd);
+    if((connect(clientSocket, (struct sockaddr*) &server_address, sizeof(server_address)) <0)){
+        cerr << "Error connecting to server" << endl;
+        exit(1);
+        }
+    char message[1024];
 
-
-
-
-    //keep waiting on user commands then close socket. 
-    close(sockfd);
+    interface(message, clientSocket);
 
     
 }
@@ -92,7 +63,9 @@ int main()
 void interface(char message[1024], int sockfd){
    bool stopWorking = false;
    char output[1024]; // Output message from server.
-    int msgSize;
+   memset(message,'\0',sizeof(message));
+   memset(output, '\0', sizeof(output));
+   int msgSize;
    //Display Main Menu
     cout << "-----------------------------------\n";
     cout << "| Use commands to interact with    |\n";

@@ -1,6 +1,6 @@
 
 .intel_syntax noprefix
-.global writeScr, protectedWrite, segLoader, lgdtLoad, go, schedule
+.global writeScr, protectedWrite, segLoader, lgdtLoad, go, schedule, lidt, outport
 .extern dequeue, enqueue, currPCB
 
 
@@ -64,7 +64,7 @@ _protected_loop:
     movsb
     movb es:[edi], 31
     inc edi
-    jmp _pm_loop
+    jmp _protected_loop
 
 _protected_done:
     pop es
@@ -128,27 +128,62 @@ go:
     iret
 
 schedule:
-    pushf
-    push cs
-    push OFFSET _afterSwitch
-    pushad
-    push ds
-    push es
-    push fs
-    push gs
-    mov eax, [currPCB]
-    mov [eax], esp
-    push eax
-    call enqueue
-    call dequeue
-    mov [currPCB], eax
-    mov esp, [eax]
-    mov ss, [eax+4]
-    pop gs
-    pop fs
-    pop es
-    pop ds
-    popad
-    iret
+	push eax
+	mov al, 0x20
+	out 0x20, al
+	inc DWORD PTR timer
+	cmp DWORD PTR timer,3
+	je _switch
+	pop eax
+	iret
+
+_switch:
+	mov DWORD PTR timer, 0
+	pop eax
+	pushad
+	push ds
+	push es
+	push fs
+	push gs
+	mov eax, [currPCB]
+	mov [eax], esp
+	push eax
+	call enqueue
+	call dequeue
+	mov [currPCB], eax
+	mov esp, [eax]
+	mov ss, [eax+4]
+	pop gs
+	pop fs
+	pop es
+	pop ds
+	popad
+	iret
+
 _afterSwitch:
-    ret
+	ret
+lidt:
+	push ebp
+	mov ebp, esp
+	pushf
+	push eax
+	mov eax, [ebp+8]
+	lidt [eax]
+	pop eax
+	popf
+	pop ebp
+ 	ret
+
+outport:
+	push ebp
+	mov ebp, esp
+	pushf
+	push dx
+	mov al, [ebp+12]
+	mov dx, [ebp+8]
+	out dx, al
+	pop dx
+	pop ax
+	popf
+	pop ebp
+	ret
