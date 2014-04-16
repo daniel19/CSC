@@ -164,12 +164,13 @@ void interface(char message[1024], int sockfd){
           cout << endl<< "Enter in desired Message:"; 
           string message; 
           getline(cin, message);
-           
-          //send to main chat list
+          
+           command.append(message);
+           //send to main chat list
           char* sendCommand = const_cast<char*>(command.c_str());
-          strcpy(sendCommand, message.c_str());
+          //strcpy(sendCommand, message.c_str());
+           cout << "Sending stringCommand: " << sendCommand << endl;
           send(sockfd, sendCommand, strlen(sendCommand),0);
-
           recv(sockfd, output, 1024, 0);
           cout << endl << output << endl;
 

@@ -18,7 +18,7 @@
 using namespace std;
 
 //Protoypes
-void parseMessage(char* buffer, int clisock);
+bool parseMessage(char* buffer, int clisock);
 void setupClient(char* buffer, int clisock);    
 
 //Global Variables
@@ -181,7 +181,15 @@ int main(int argc, char* argv[])
 						}
 						else{
 							//parseMessage
-                            parseMessage(receiveBuff, fds[i].fd);
+                            bool result;
+                            result = parseMessage(receiveBuff, fds[i].fd);
+                            
+                            if (result)
+                                //do nothing
+                                closeConnection = 0;
+                            else
+                                closeConnection = 1; //quit was sent
+                            
 						}//end else
 					}//end while
                     //close the connection
@@ -217,7 +225,7 @@ int main(int argc, char* argv[])
 	
 	return 0;
 }
-void parseMessage(char* buffer, int clisock)
+bool parseMessage(char* buffer, int clisock)
 {
     int msgSize;
     const int maxCommands = 6;
@@ -235,13 +243,14 @@ void parseMessage(char* buffer, int clisock)
     
 
     char command[5];
-//    char *commandS = const_cast<char*>(s.c_str());
     for(int j=0;j< 5;j++){
         command[j] = buffer[j];
 	    if(j == 4){
 		    command[j+1] = '\0';
 	    }
     }
+    
+    cout << "Command Received: " << command << endl;
 	
    //Perform actions based on the command sent by client. 
   if (!strcmp(command, name)){
@@ -296,6 +305,9 @@ void parseMessage(char* buffer, int clisock)
       }
       char* sendMessages = const_cast<char*>(currentMessages.c_str());
 
+      
+      cout << "Sending updated list: " << sendMessages << endl;
+      
       if((send(clisock, sendMessages, strlen(sendMessages),0)) < 0){
           cerr << "Send Error-update" << endl;
       }
@@ -317,10 +329,15 @@ void parseMessage(char* buffer, int clisock)
     string myMessage(message);
     typingPerson.append(":");
     typingPerson.append(myMessage);
+      
+      
+      messageList.push_back(typingPerson);
     
     cout << "--------Incoming Message--------" << endl;
     cout << typingPerson << endl << endl;
-
+    
+      char out[20] = "Message Received";
+      send(clisock, out, strlen(out),0 );
 
   }else{
 
@@ -331,10 +348,12 @@ void parseMessage(char* buffer, int clisock)
             if(clisock == chatList[i].getSocket()){
                 cout << "Client:" << chatList[i].getName() << " has disconnected." << endl;
                 chatList.erase(chatList.begin() + i-1);
+                return false;
             }
         }
 
   }
+    return true;
 
 }
 
