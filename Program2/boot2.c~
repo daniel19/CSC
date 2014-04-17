@@ -23,7 +23,7 @@ void p10();
 int createProcess(uint32_t ds, uint32_t ss, uint32_t topOfStack, uint32_t cs, uint32_t processEntry);
 int* allocStack();
 
-void lidt(idt_ptr_t *pidt);
+void lidtLoad(idt_ptr_t *pidt);
 void initIDT();
 void schedule();
 void go();
@@ -153,9 +153,21 @@ void p1()
     char msg[] = "Process p01:  ";
     while(1)
     {
-        msg[13] =  (i + '0');
+        msg[13+i] = '*';
         protectedWrite(msg, 5, 0);
-        i = (i + 1) % 10;
+        i++;
+        if(i >=9){
+	    i=0;
+	    msg[13] = ' ';
+            msg[14] = ' ';
+            msg[15] = ' ';
+            msg[16] = ' ';
+            msg[17] = ' ';
+            msg[18] = ' ';
+            msg[19] = ' ';
+            msg[20] = ' ';
+            msg[21] = ' ';
+	}
         //schedule();
 	asm("int $32");
     }
@@ -167,9 +179,21 @@ void p2()
     char msg[] = "Process p02:  ";
     while(1)
     {
-        msg[13] = (i + '0');
+        msg[13+i] = 'x';
         protectedWrite(msg, 6, 0);
-        i = (i + 1) % 10;
+        i++;
+        if(i >=9){
+	    i=0;
+	    msg[13] = ' ';
+            msg[14] = ' ';
+            msg[15] = ' ';
+            msg[16] = ' ';
+            msg[17] = ' ';
+            msg[18] = ' ';
+            msg[19] = ' ';
+            msg[20] = ' ';
+            msg[21] = ' ';
+	}
          //schedule();
 	asm("int $32");
     }
@@ -181,9 +205,21 @@ void p3()
     char msg[] = "Process p03:  ";
     while(1)
     {
-        msg[13] = (i + '0');
+        msg[13+i] = 'P';
         protectedWrite(msg, 7, 0);
-        i = (i + 1) % 10;
+         i++;
+        if(i >=9){
+	    i=0;
+	    msg[13] = ' ';
+            msg[14] = ' ';
+            msg[15] = ' ';
+            msg[16] = ' ';
+            msg[17] = ' ';
+            msg[18] = ' ';
+            msg[19] = ' ';
+            msg[20] = ' ';
+            msg[21] = ' ';
+	}
          //schedule();
 	asm("int $32");
     }
@@ -195,9 +231,21 @@ void p4()
     char msg[] = "Process p04:  ";
     while(1)
     {
-        msg[13] = (i + '0');
+        msg[13+i] = 'V';
         protectedWrite(msg, 8, 0);
-        i = (i + 1) % 10;
+         i++;
+        if(i >=9){
+	    i=0;
+	    msg[13] = ' ';
+            msg[14] = ' ';
+            msg[15] = ' ';
+            msg[16] = ' ';
+            msg[17] = ' ';
+            msg[18] = ' ';
+            msg[19] = ' ';
+            msg[20] = ' ';
+            msg[21] = ' ';
+	}
          //schedule();
 	asm("int $32");
     }
@@ -209,9 +257,21 @@ void p5()
     char msg[] = "Process p05:  ";
     while(1)
     {
-        msg[13] = (i + '0');
+        msg[13+i] = '=';
         protectedWrite(msg, 9, 0);
-        i = (i + 1) % 10;
+         i++;
+        if(i >=9){
+	    i=0;
+	    msg[13] = ' ';
+            msg[14] = ' ';
+            msg[15] = ' ';
+            msg[16] = ' ';
+            msg[17] = ' ';
+            msg[18] = ' ';
+            msg[19] = ' ';
+            msg[20] = ' ';
+            msg[21] = ' ';
+	}
         //schedule();
 	asm("int $32");
     }
@@ -223,9 +283,21 @@ void p6()
     char msg[] = "Process p06:  ";
     while(1)
     {
-        msg[13] = (i + '0');
+        msg[13+i] = '-';
         protectedWrite(msg, 10, 0);
-        i = (i + 1) % 10;
+         i++;
+        if(i >=9){
+	    i=0;
+	    msg[13] = ' ';
+            msg[14] = ' ';
+            msg[15] = ' ';
+            msg[16] = ' ';
+            msg[17] = ' ';
+            msg[18] = ' ';
+            msg[19] = ' ';
+            msg[20] = ' ';
+            msg[21] = ' ';
+	}
          //schedule();
 	asm("int $32");
     }
@@ -237,9 +309,21 @@ void p7()
     char msg[] = "Process p07:  ";
     while(1)
     {
-        msg[13] = (i + '0');
+        msg[13+i] = '0';
         protectedWrite(msg, 11, 0);
-        i = (i + 1) % 10;
+         i++;
+        if(i >=9){
+	    i=0;
+	    msg[13] = ' ';
+            msg[14] = ' ';
+            msg[15] = ' ';
+            msg[16] = ' ';
+            msg[17] = ' ';
+            msg[18] = ' ';
+            msg[19] = ' ';
+            msg[20] = ' ';
+            msg[21] = ' ';
+	}
          //schedule();
 	asm("int $32");
     }
@@ -251,11 +335,23 @@ void p8()
     char msg[] = "Process p08:  ";
     while(1)
     {
-        msg[13] = (i + '0');
+        msg[13+i] = 'Z';
         protectedWrite(msg, 12, 0);
-        i = (i + 1) % 10;
+         i++;
+        if(i >=9){
+	    i=0;
+	    msg[13] = ' ';
+            msg[14] = ' ';
+            msg[15] = ' ';
+            msg[16] = ' ';
+            msg[17] = ' ';
+            msg[18] = ' ';
+            msg[19] = ' ';
+            msg[20] = ' ';
+            msg[21] = ' ';
+	}
         //schedule();
-	asm("int $32");
+	//asm("int $32");
     }
 }
 
@@ -265,11 +361,23 @@ void p9()
     char msg[] = "Process p09:  ";
     while(1)
     {
-        msg[13] = (i + '0');
+        msg[13+i] = '.';
         protectedWrite(msg, 13, 0);
-        i = (i + 1) % 10;
+        i++;
+        if(i >=9){
+	    i=0;
+	    msg[13] = ' ';
+            msg[14] = ' ';
+            msg[15] = ' ';
+            msg[16] = ' ';
+            msg[17] = ' ';
+            msg[18] = ' ';
+            msg[19] = ' ';
+            msg[20] = ' ';
+            msg[21] = ' ';
+	}
         //schedule();
-	asm("int $32");
+	//asm("int $32");
     }
 }
 
@@ -279,11 +387,23 @@ void p10()
     char msg[] = "Process p10:  ";
     while(1)
     {
-        msg[13] = (i + '0');
+        msg[13+i] = 'B';
         protectedWrite(msg, 14, 0);
-        i = (i + 1) % 10;
+        i++;
+        if(i >=9){
+	    i=0;
+	    msg[13] = ' ';
+            msg[14] = ' ';
+            msg[15] = ' ';
+            msg[16] = ' ';
+            msg[17] = ' ';
+            msg[18] = ' ';
+            msg[19] = ' ';
+            msg[20] = ' ';
+            msg[21] = ' ';
+	}
         //schedule();
-	asm("int $32");
+	//asm("int $32");
     }
 }
 
@@ -352,20 +472,20 @@ void initIDT(){
 
     myIDT.limit = sizeof(idt) - 1;
     myIDT.base = (uint32_t)idt;
-    lidt(&myIDT);
+    lidtLoad(&myIDT);
 }
 
 void setupPIC(){
-    outportb(0x20, 0x11);
-    outportb(0xA0, 0x11);
-    outportb(0x21, 0x20);
-    outportb(0xA1, 0x28);
-    outportb(0x21, 0x04);
-    outportb(0xA1, 0x02);
-    outportb(0x21, 0x01);
-    outportb(0xA1, 0x01);
-    outportb(0x21, 0x0);
-    outportb(0xA1, 0x0);
-    outportb(0x21, 0xfe);
-    outportb(0xa1, 0xff);
+    outport(0x20, 0x11);
+    outport(0xA0, 0x11);
+    outport(0x21, 0x20);
+    outport(0xA1, 0x28);
+    outport(0x21, 0x04);
+    outport(0xA1, 0x02);
+    outport(0x21, 0x01);
+    outport(0xA1, 0x01);
+    outport(0x21, 0x0);
+    outport(0xA1, 0x0);
+    outport(0x21, 0xfe);
+    outport(0xa1, 0xff);
 }

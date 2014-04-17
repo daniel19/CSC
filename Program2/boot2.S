@@ -1,6 +1,6 @@
 
 .intel_syntax noprefix
-.global writeScr, protectedWrite, segLoader, lgdtLoad, go, schedule, lidt, outport
+.global writeScr, protectedWrite, segLoader, lgdtLoad, go, schedule, lidtLoad, outport
 .extern dequeue, enqueue, currPCB, timer
 
 
@@ -41,6 +41,7 @@ protectedWrite:
     push ebp
     mov ebp, esp
     pushf
+    cli
     push eax
     push ebx
     push esi
@@ -132,7 +133,7 @@ schedule:
 	mov al, 0x20
 	out 0x20, al
 	inc DWORD PTR timer
-	cmp DWORD PTR timer,3
+	cmp DWORD PTR timer, 3
 	je _switch
 	pop eax
 	iret
@@ -162,7 +163,7 @@ _switch:
 
 _afterSwitch:
 	ret
-lidt:
+lidtLoad:
 	push ebp
 	mov ebp, esp
 	pushf
@@ -178,6 +179,7 @@ outport:
 	push ebp
 	mov ebp, esp
 	pushf
+	push ax
 	push dx
 	mov al, [ebp+12]
 	mov dx, [ebp+8]
