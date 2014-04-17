@@ -5,7 +5,7 @@
 
 void clearScr();
 void writeScr(char *string, int row, int col);
-void protectedWrite(char *string, int row, int col);
+//void protectedWrite(char *string, int row, int col);
 void segLoader(uint32_t code, uint32_t data, uint32_t stack, 
         uint32_t video);
 void lgdtLoad(gdt_ptr_t *pgdt);
@@ -150,7 +150,7 @@ void protectedClear()
 void p1()
 {
     int i = 0;
-    char msg[] = "Process p01:  ";
+    char msg[] = "Process p01:              ";
     while(1)
     {
         msg[13+i] = '*';
@@ -176,7 +176,7 @@ void p1()
 void p2()
 {
     int i = 0;
-    char msg[] = "Process p02:  ";
+    char msg[] = "Process p02:              ";
     while(1)
     {
         msg[13+i] = 'x';
@@ -202,7 +202,7 @@ void p2()
 void p3()
 {
     int i = 0;
-    char msg[] = "Process p03:  ";
+    char msg[] = "Process p03:              ";
     while(1)
     {
         msg[13+i] = 'P';
@@ -228,7 +228,7 @@ void p3()
 void p4()
 {
     int i = 0;
-    char msg[] = "Process p04:  ";
+    char msg[] = "Process p04:              ";
     while(1)
     {
         msg[13+i] = 'V';
@@ -254,7 +254,7 @@ void p4()
 void p5()
 {
     int i = 0;
-    char msg[] = "Process p05:  ";
+    char msg[] = "Process p05:              ";
     while(1)
     {
         msg[13+i] = '=';
@@ -280,7 +280,7 @@ void p5()
 void p6()
 {
     int i = 0;
-    char msg[] = "Process p06:  ";
+    char msg[] = "Process p06:              ";
     while(1)
     {
         msg[13+i] = '-';
@@ -306,7 +306,7 @@ void p6()
 void p7()
 {
     int i = 0;
-    char msg[] = "Process p07:  ";
+    char msg[] = "Process p07:              ";
     while(1)
     {
         msg[13+i] = '0';
@@ -332,7 +332,7 @@ void p7()
 void p8()
 {
     int i = 0;
-    char msg[] = "Process p08:  ";
+    char msg[] = "Process p08:              ";
     while(1)
     {
         msg[13+i] = 'Z';
@@ -358,7 +358,7 @@ void p8()
 void p9()
 {
     int i = 0;
-    char msg[] = "Process p09:  ";
+    char msg[] = "Process p09:              ";
     while(1)
     {
         msg[13+i] = '.';
@@ -384,14 +384,16 @@ void p9()
 void p10()
 {
     int i = 0;
-    char msg[] = "Process p10:  ";
+    char msg[] = "Process p10:              ";
     while(1)
     {
         msg[13+i] = 'B';
         protectedWrite(msg, 14, 0);
         i++;
         if(i >=9){
+	   
 	    i=0;
+
 	    msg[13] = ' ';
             msg[14] = ' ';
             msg[15] = ' ';

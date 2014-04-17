@@ -1,12 +1,54 @@
-
+/****************************************************
+ * boot2.S
+ * 
+ * Written by: Eli Ramsey
+ * Written for: CSC 4100 - Operating Systems
+ * Tennessee Tech University
+ * Code Started: 1 February 2013
+ * Spring 2013
+ *
+ * Phase 1: Defines the writeScr function for use with boot2.c
+ *
+ * The function sets up the stack frame, calculates
+ *    the offset in video memory of the message using
+ *    values passed in from the C code, and writes the
+ *    characters to video memory to be displayed.
+ *
+ * Phase 2: Defines the pmWriteScr and segLoader functions
+ *
+ * pmWriteScr does the same thing as writeScr, but in
+ *    protected mode
+ *
+ * segLoader loads the appropriate segments with their
+ *    correct values
+ *
+ * lgdtLoad loads the gdt into the hardware to be used
+ *    by the OS
+ *
+ * Phase 3: Defines go and schedule
+ *
+ * go starts the processes running
+ *
+ * schedule manages the running processes and dictates
+ *    what happens while the processes run
+ *
+ * Phase 4: Defines outportb, changes to schedule and
+ *    pmWriteScr
+ *
+ * These changes allow for autonomous process handling
+ ****************************************************/
 .intel_syntax noprefix
-.global writeScr, protectedWrite, segLoader, lgdtLoad, go, schedule, lidt, outport
+.global writeScr, protectedWrite, segLoader, lgdtLoad, go, schedule, lidtLoad, outport
 .extern dequeue, enqueue, currPCB, timer
 
 
 writeScr:
+    /*set up the stack frame
+      for use*/
     push ebp
     mov ebp, esp
+    /*save all flags and registers being
+      used in function*/
     pushf
     push eax
     push ebx
@@ -20,23 +62,26 @@ writeScr:
     imul eax, 2
     add eax, 0xB8000
     mov edi, eax             //move offset into edi
-
+    /*if there is nothing in the string
+     exit the function*/
 loop:
     cmpb [esi], 0
-    je done_printing
+    je _out_bound
+    /*otherwise, write string to screen*/
     movsb es:[edi], ds:[esi]
     movb es:[edi],31
     inc edi
+    //inc esi
     jmp loop
-
-done_printing:
+    /*restore registers and exit function*/
+_out_bound:
     pop ebx
     pop eax
     popf
     pop ebp
     ret
 
-
+/*See write-ups for writeScr*/
 protectedWrite:
     push ebp
     mov ebp, esp
@@ -59,15 +104,15 @@ protectedWrite:
     mov eax, 32
     mov es, eax
 
-_protected_loop:
+_pm_loop:
     cmpb [esi], 0
-    je _protected_done
+    je _pm_out_bound
     movsb
     movb es:[edi], 31
     inc edi
-    jmp _protected_loop
+    jmp _pm_loop
 
-_protected_done:
+_pm_out_bound:
     pop es
     pop edi
     pop esi
@@ -83,21 +128,27 @@ segLoader:
     pushf
     push eax
 
+    // You should be able to guess how the parameters have been passed
     mov eax, [ebp+12] // set up ds selector
     mov ds, eax
+    // note that gs = fs = ds
     mov eax, [ebp+20] // set up es selector
     mov es, eax
     mov eax, [ebp+20] // set up fs selector
     mov fs, eax
     mov eax, [ebp+20] // set up gs selector
     mov gs, eax
+    /* The next two lines will only mess up the stack if the esp
+    now points to someplace different. However, we set it up so
+    that our new selector points the same place as the one set
+    up by the boot loader */
     mov eax, [ebp+16] // set up ss selector
     mov ss, eax
-    mov eax, [ebp+8] // load cs 
+    mov eax, [ebp+8] // now we load cs. can you guess how this works?
     push eax
     push OFFSET _loadcs
     retf
-_loadcs:
+_loadcs: // we return here after retf
     pop eax
     popf
     pop ebp
@@ -129,63 +180,63 @@ go:
     iret
 
 schedule:
-	push eax
-	mov al, 0x20
-	out 0x20, al
-	inc DWORD PTR timer
-	cmp DWORD PTR timer, 3
-	je _switch
-	pop eax
-	iret
-
-_switch:
-	mov DWORD PTR timer, 0
-	pop eax
-	pushad
-	push ds
-	push es
-	push fs
-	push gs
-	mov eax, [currPCB]
-	mov [eax], esp
-	push eax
-	call enqueue
-	call dequeue
-	mov [currPCB], eax
-	mov esp, [eax]
-	mov ss, [eax+4]
-	pop gs
-	pop fs
-	pop es
-	pop ds
-	popad
-	iret
-
+    push eax
+    mov al, 0x20
+    out 0x20, al
+    inc DWORD PTR timer
+    cmp DWORD PTR timer, 3
+    je _SWITCH
+    pop eax
+    iret
+_SWITCH:
+    mov DWORD PTR timer, 0
+    pop eax
+    pushad
+    push ds
+    push es
+    push fs
+    push gs
+    mov eax, [currPCB]
+    mov [eax], esp
+    push eax
+    call enqueue
+    call dequeue
+    mov [currPCB], eax
+    mov esp, [eax]
+    mov ss, [eax+4]
+    pop gs
+    pop fs
+    pop es
+    pop ds
+    popad
+    iret
 _afterSwitch:
-	ret
-lidtLoad:
-	push ebp
-	mov ebp, esp
-	pushf
-	push eax
-	mov eax, [ebp+8]
-	lidt [eax]
-	pop eax
-	popf
-	pop ebp
- 	ret
+    ret
 
-outport:
-	push ebp
-	mov ebp, esp
-	pushf
-	push ax
-	push dx
-	mov al, [ebp+12]
-	mov dx, [ebp+8]
-	out dx, al
-	pop dx
-	pop ax
-	popf
-	pop ebp
-	ret
+lidtLoad:
+    push ebp
+    mov ebp, esp
+    pushf
+    push eax
+    mov eax, [ebp+8]
+    lidt [eax]
+    pop eax
+    popf
+    pop ebp
+    ret
+
+outportb:
+    push ebp
+    mov ebp, esp
+    pushf
+    push ax
+    push dx
+    mov al, [ebp+12]
+    mov dx, [ebp+8]
+    out dx, al
+    pop dx
+    pop ax
+    popf
+    pop ebp
+    ret
+
