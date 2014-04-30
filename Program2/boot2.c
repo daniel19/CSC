@@ -2,6 +2,7 @@
 #include "queue.h"
 #include "pcb.h"
 #include "idt.h"
+#include "mutex.h"
 
 void clearScr();
 void writeScr(char *string, int row, int col);
@@ -29,6 +30,12 @@ void schedule();
 void go();
 void setupPIC();
 
+//Program 5 functions
+int convert_num_h(unsigned int num, char buff[]);
+void convert_num(unsigned int num, char buff[]);
+void unlock(uint32_t *);
+void mutex_init(mutex_t *m);
+
 /*Global variables*/
 int STACK_SIZE = 1024;
 gdt_entry_t gdt[5]; //Global descriptor table
@@ -40,6 +47,11 @@ idt_entry_t idt[256];
 idt_ptr_t myIDT;
 int timer =0;
 
+//Program5 Variables
+mutex_t m;
+uint32_t finished = 0;
+uint32_t global_var = 0;
+uint32_t bolt;
 int main()
 {
     clearScr();
@@ -74,7 +86,11 @@ int main()
     }
     protectedClear();
     protectedWrite("Running ten processes. . .",0,0);
-    
+   
+
+    //initialize the mutex
+    mutex_init(&m);
+
     //initialize queue for use
     queues.head = 0;
     queues.tail = 9;
@@ -149,264 +165,203 @@ void protectedClear()
 //Processes
 void p1()
 {
-    int i = 0;
-    char msg[] = "Process p01:              ";
-    while(1)
-    {
-        msg[13+i] = '*';
-        protectedWrite(msg, 5, 0);
-        i++;
-        if(i >=9){
-	    i=0;
-	    msg[13] = ' ';
-            msg[14] = ' ';
-            msg[15] = ' ';
-            msg[16] = ' ';
-            msg[17] = ' ';
-            msg[18] = ' ';
-            msg[19] = ' ';
-            msg[20] = ' ';
-            msg[21] = ' ';
-	}
-        //schedule();
-	asm("int $32");
+  int i;
+  char buf[100] = "P1 Number is: ";
+  for ( i = 0; i < 100000; i++) {
+    mutex_lock(&m);
+    int my_var = global_var;
+    my_var++; 
+    global_var = my_var;
+
+    if (i == 99999) {
+      finished++;
     }
+    convert_num(global_var, buf+14);
+    protectedWrite(buf, 5, 0);
+    mutex_unlock(&m);
+  }
+  while (1);
 }
 
 void p2()
 {
-    int i = 0;
-    char msg[] = "Process p02:              ";
-    while(1)
-    {
-        msg[13+i] = 'x';
-        protectedWrite(msg, 6, 0);
-        i++;
-        if(i >=9){
-	    i=0;
-	    msg[13] = ' ';
-            msg[14] = ' ';
-            msg[15] = ' ';
-            msg[16] = ' ';
-            msg[17] = ' ';
-            msg[18] = ' ';
-            msg[19] = ' ';
-            msg[20] = ' ';
-            msg[21] = ' ';
-	}
-         //schedule();
-	asm("int $32");
+   int i;
+    char buf[100] = "P2 Number is: ";
+  for (i = 0; i < 100000; i++) {
+    mutex_lock(&m);
+    int my_var = global_var;
+    my_var++; 
+    global_var = my_var;
+
+    if (i == 99999) {
+      finished++;
     }
+    convert_num(global_var, buf+14);
+    protectedWrite(buf, 6, 0);
+    mutex_unlock(&m);
+  }
+  while (1);
 }
 
 void p3()
 {
-    int i = 0;
-    char msg[] = "Process p03:              ";
-    while(1)
-    {
-        msg[13+i] = 'P';
-        protectedWrite(msg, 7, 0);
-         i++;
-        if(i >=9){
-	    i=0;
-	    msg[13] = ' ';
-            msg[14] = ' ';
-            msg[15] = ' ';
-            msg[16] = ' ';
-            msg[17] = ' ';
-            msg[18] = ' ';
-            msg[19] = ' ';
-            msg[20] = ' ';
-            msg[21] = ' ';
-	}
-         //schedule();
-	asm("int $32");
+    int i;
+  char buf[100] = "P3 Number is: ";
+  for (i = 0; i < 100000; i++) {
+    mutex_lock(&m);
+    int my_var = global_var;
+    my_var++; 
+    global_var = my_var;
+
+    if (i == 99999) {
+      finished++;
     }
+    convert_num(global_var, buf+14);
+    protectedWrite(buf, 7, 0);
+    mutex_unlock(&m);
+  }
+  while (1);
 }
 
 void p4()
 {
-    int i = 0;
-    char msg[] = "Process p04:              ";
-    while(1)
-    {
-        msg[13+i] = 'V';
-        protectedWrite(msg, 8, 0);
-         i++;
-        if(i >=9){
-	    i=0;
-	    msg[13] = ' ';
-            msg[14] = ' ';
-            msg[15] = ' ';
-            msg[16] = ' ';
-            msg[17] = ' ';
-            msg[18] = ' ';
-            msg[19] = ' ';
-            msg[20] = ' ';
-            msg[21] = ' ';
-	}
-         //schedule();
-	asm("int $32");
+  int i;  
+    char buf[100] = "P4 Number is: ";
+  for (i = 0; i < 100000; i++) {
+    mutex_lock(&m);
+    int my_var = global_var;
+    my_var++; 
+    global_var = my_var;
+
+    if (i == 99999) {
+      finished++;
     }
+    convert_num(global_var, buf+14);
+    protectedWrite(buf, 8, 0);
+    mutex_unlock(&m);
+  }
+  while (1);
+
 }
 
 void p5()
 {
-    int i = 0;
-    char msg[] = "Process p05:              ";
-    while(1)
-    {
-        msg[13+i] = '=';
-        protectedWrite(msg, 9, 0);
-         i++;
-        if(i >=9){
-	    i=0;
-	    msg[13] = ' ';
-            msg[14] = ' ';
-            msg[15] = ' ';
-            msg[16] = ' ';
-            msg[17] = ' ';
-            msg[18] = ' ';
-            msg[19] = ' ';
-            msg[20] = ' ';
-            msg[21] = ' ';
-	}
-        //schedule();
-	asm("int $32");
+    int i;
+  char buf[100] = "P5 Number is: ";
+  for (i = 0; i < 100000; i++) {
+    mutex_lock(&m);
+    int my_var = global_var;
+    my_var++; 
+    global_var = my_var;
+
+    if (i == 99999) {
+      finished++;
     }
+    convert_num(global_var, buf+14);
+    protectedWrite(buf, 9, 0);
+    mutex_unlock(&m);
+  }
+  while (1);
 }
 
 void p6()
 {
-    int i = 0;
-    char msg[] = "Process p06:              ";
-    while(1)
-    {
-        msg[13+i] = '-';
-        protectedWrite(msg, 10, 0);
-         i++;
-        if(i >=9){
-	    i=0;
-	    msg[13] = ' ';
-            msg[14] = ' ';
-            msg[15] = ' ';
-            msg[16] = ' ';
-            msg[17] = ' ';
-            msg[18] = ' ';
-            msg[19] = ' ';
-            msg[20] = ' ';
-            msg[21] = ' ';
-	}
-         //schedule();
-	asm("int $32");
+    int i;
+  char buf[100] = "P6 Number is: ";
+  for (i = 0; i < 100000; i++) {
+    mutex_lock(&m);
+    int my_var = global_var;
+    my_var++; 
+    global_var = my_var;
+
+    if (i == 99999) {
+      finished++;
     }
+    convert_num(global_var, buf+14);
+    protectedWrite(buf, 10, 0);
+    mutex_unlock(&m);
+  }
+  while (1);
 }
 
 void p7()
 {
-    int i = 0;
-    char msg[] = "Process p07:              ";
-    while(1)
-    {
-        msg[13+i] = '0';
-        protectedWrite(msg, 11, 0);
-         i++;
-        if(i >=9){
-	    i=0;
-	    msg[13] = ' ';
-            msg[14] = ' ';
-            msg[15] = ' ';
-            msg[16] = ' ';
-            msg[17] = ' ';
-            msg[18] = ' ';
-            msg[19] = ' ';
-            msg[20] = ' ';
-            msg[21] = ' ';
-	}
-         //schedule();
-	asm("int $32");
+    int i;
+  char buf[100] = "P7 Number is: ";
+  for (i = 0; i < 100000; i++) {
+    mutex_lock(&m);
+    int my_var = global_var;
+    my_var++; 
+    global_var = my_var;
+
+    if (i == 99999) {
+      finished++;
     }
+    convert_num(global_var, buf+14);
+    protectedWrite(buf, 11, 0);
+    mutex_unlock(&m);
+  }
+  while (1);
 }
 
 void p8()
 {
-    int i = 0;
-    char msg[] = "Process p08:              ";
-    while(1)
-    {
-        msg[13+i] = 'Z';
-        protectedWrite(msg, 12, 0);
-         i++;
-        if(i >=9){
-	    i=0;
-	    msg[13] = ' ';
-            msg[14] = ' ';
-            msg[15] = ' ';
-            msg[16] = ' ';
-            msg[17] = ' ';
-            msg[18] = ' ';
-            msg[19] = ' ';
-            msg[20] = ' ';
-            msg[21] = ' ';
-	}
-        //schedule();
-	asm("int $32");
+    int i;
+  char buf[100] = "P8 Number is: ";
+  for (i = 0; i < 100000; i++) {
+    mutex_lock(&m);
+    int my_var = global_var;
+    my_var++; 
+    global_var = my_var;
+
+    if (i == 99999) {
+      finished++;
     }
+    convert_num(global_var, buf+14);
+    protectedWrite(buf, 12, 0);
+    mutex_unlock(&m);
+  }
+  while (1);
 }
 
 void p9()
 {
-    int i = 0;
-    char msg[] = "Process p09:              ";
-    while(1)
-    {
-        msg[13+i] = '.';
-        protectedWrite(msg, 13, 0);
-        i++;
-        if(i >=9){
-	    i=0;
-	    msg[13] = ' ';
-            msg[14] = ' ';
-            msg[15] = ' ';
-            msg[16] = ' ';
-            msg[17] = ' ';
-            msg[18] = ' ';
-            msg[19] = ' ';
-            msg[20] = ' ';
-            msg[21] = ' ';
-	}
-        //schedule();
-	asm("int $32");
+    int i;
+  char buf[100] = "P9 Number is: ";
+  for (i = 0; i < 100000; i++) {
+    mutex_lock(&m);
+    int my_var = global_var;
+    my_var++; 
+    global_var = my_var;
+
+    if (i == 99999) {
+      finished++;
     }
+    convert_num(global_var, buf+14);
+    protectedWrite(buf, 13, 0);
+    mutex_unlock(&m);
+  }
+  while (1);
 }
 
 void p10()
 {
-    int i = 0;
-    char msg[] = "Process p10:              ";
-    while(1)
-    {
-        msg[13+i] = 'B';
-        protectedWrite(msg, 14, 0);
-        i++;
-        if(i >=9){
-	   
-	    i=0;
+    int i;
+  char buf[100] = "P10 Number is: ";
+  for (i = 0; i < 100000; i++) {
+    mutex_lock(&m);
+    int my_var = global_var;
+    my_var++; 
+    global_var = my_var;
 
-	    msg[13] = ' ';
-            msg[14] = ' ';
-            msg[15] = ' ';
-            msg[16] = ' ';
-            msg[17] = ' ';
-            msg[18] = ' ';
-            msg[19] = ' ';
-            msg[20] = ' ';
-            msg[21] = ' ';
-	}
-        //schedule();
-	asm("int $32");
+    if (i == 99999) {
+      finished++;
     }
+    convert_num(global_var, buf+15);
+    protectedWrite(buf, 14, 0);
+    mutex_unlock(&m);
+  }
+  while (1);
 }
 
 int* allocStack()
@@ -490,4 +445,23 @@ void setupPIC(){
     outport(0xA1, 0x0);
     outport(0x21, 0xfe);
     outport(0xa1, 0xff);
+}
+
+int convert_num_h(unsigned int num, char buf[]) {
+  if (num == 0) {
+    return 0;
+  }
+  int idx = convert_num_h(num / 10, buf);
+  buf[idx] = num % 10 + '0';
+  buf[idx+1] = '\0';
+  return idx + 1;
+}
+
+void convert_num(unsigned int num, char buf[]) {
+  if (num == 0) {
+    buf[0] = '0';
+    buf[1] = '\0';
+  } else {
+    convert_num_h(num, buf);
+  }
 }

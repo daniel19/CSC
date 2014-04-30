@@ -40,4 +40,17 @@ pcb_t* dequeue(void)
     return &(queues.pcbs[temp]);
 }
 
+pcb_t* genDequeue(queue_t *q)
+{
+    int temp = q->head;
+    q->head = (q->head+1) % QUEUE_SIZE;
+    return &(q->pcbs[temp]);
+}
+
+void genEnqueue(queue_t* q, pcb_t* currPCB)
+{
+    int temp = q->tail;
+    q->tail = (q->tail+1) % QUEUE_SIZE;
+    q->pcbs[temp] = *currPCB;
+}
 #endif
