@@ -1,7 +1,7 @@
 
 .intel_syntax noprefix
-.global writeScr, protectedWrite, segLoader, lgdtLoad, go, schedule, lidtLoad, outport
-.extern dequeue, enqueue, currPCB, timer
+.global writeScr, protectedWrite, segLoader, lgdtLoad, go, schedule, lidtLoad, outport, unlock, mutexSchedule
+.extern dequeue, enqueue, currPCB, timer, queues, bolt
 
 
 writeScr:
@@ -189,3 +189,67 @@ outport:
 	popf
 	pop ebp
 	ret
+
+unlock:
+    push ebp
+    mov ebp, esp
+    pushf
+    pushad
+    mov eax, 0
+    mov ebx, [ebp+8]
+    xchg eax, [ebx]
+    popad
+    popf
+    pop ebp
+    ret
+
+
+mutexSchedule:
+    push ebp
+    mov ebp, esp
+    pushf
+    or DWORD ptr [esp], 0x200
+    push cs
+    push OFFSET _afterSwitch2
+    pushad
+    push ds
+    push es
+    push fs
+    push gs
+
+    mov eax, [ebp+8]
+    mov ebx, [currPCB]
+    mov [ebx], esp
+    mov [ebx+4], ss
+    add eax, 8
+    push ebx
+    push eax
+    call genEnqueue
+    mov eax, OFFSET bolt
+    push eax
+
+    pop eax
+    mov eax, OFFSET queues
+    push eax
+    call genDequeue
+    mov ebx, [ebp+8]
+    add ebx, 4
+    push ebx
+    mov [currPCB], eax
+    mov esp, [eax]
+    mov eax, 24
+    mov ss, eax
+
+    pop gs
+    pop fs
+    pop es
+    pop ds
+    mov eax, OFFSET bolt
+    push eax
+    call unlock
+    pop eax
+    popad
+_afterSwitch2:
+    pop ebp
+    ret
+    
