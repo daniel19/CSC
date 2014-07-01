@@ -75,6 +75,7 @@ int main(){
         cout << "Cylinder height: " << userCylinder.getHeight() << " Cylinder radius: " << userCylinder.getRadius()  << endl;
         cout << "The volume of your cylinder is " << userCylinder.calculateVolume() << "." << endl;
         
+        cout << "TESTING OUTPUT: " << userCylinder.getRadius() <<  endl;        
         
         cout << "Create new Cylinder?(y|n): ";
         string userContinue;
@@ -101,7 +102,7 @@ int main(){
 bool validDouble(string s){
     for (int i =0; i < s.size(); i++) {//check every character in user's input
         
-        if((ispunct(s[i]) && s[i] != '.') || isblank(s[i])){
+        if((ispunct(s[i]) && s[i] != '.') || isblank(s[i]) || isalpha(s[i])){
             return false;//a incorrect character is found
         }
     }

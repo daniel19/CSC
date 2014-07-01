@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 
     }
 
-    port = atoi(argv[2]);
+    port = atoi(argv[2]);//Convert character argument to integer
     if(port < 15000){
         cerr << "Port # must be greater/equal to 15000" << endl;
     }
@@ -101,6 +101,7 @@ void interface(char message[1024], int sockfd){
     
      getline(cin,input);
 
+     //open readme file in current directory
      if(input == "README"){
          //Get README file 
          char file[10] = "README.md";

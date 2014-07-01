@@ -122,8 +122,8 @@ void interface(char message[1024], int sockfd){
     //switch(command){
       //  case "GET:":
 	if(command == "PUT:"){        
-	          string filename = input.substr(4);
-              char* file = const_cast<char*>(filename.c_str());
+	      string filename = input.substr(4);
+          char* file = const_cast<char*>(filename.c_str());
 		  //call functions to retrieve file
 
 
