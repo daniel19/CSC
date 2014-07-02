@@ -10,6 +10,8 @@
 
 using namespace std;
 
+//TODO: Clean up code by adding proper inline comments and header comments
+
 //Protoypes
 void parseMessage(char* buffer, int clisock);
     

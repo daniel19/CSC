@@ -8,13 +8,14 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <fstream>
-
 using namespace std;
+
+//TODO: Clean up User interface make it more helpful.
+
 //Function Prototypes
 void interface(char messeage[1024], int sockfd);
 
-int main(int argc, char* argv[]) 
-//int main()
+int main(int argc, char* argv[])
 {
 	int sockfd;
 	struct sockaddr_in server_addr;
@@ -32,7 +33,7 @@ int main(int argc, char* argv[])
 	
 	port = atoi(argv[2]);
 	
- // port = 15000;
+ // port = 15000; Uncomment for testing purposes.
 	
     // Error check the port number.
 	if(port <= 10000) 
@@ -42,8 +43,7 @@ int main(int argc, char* argv[])
 	}
 	
 	// Error check the server name.
-	if((hent=gethostbyname(argv[1])) == NULL) 
-	//if((hent=gethostbyname("localhost")) == NULL)
+	if((hent=gethostbyname(argv[1])) == NULL) 	//if((hent=gethostbyname("localhost")) == NULL) Uncomment for testing purposes.
     {
 		cerr << "Invalid host name." << endl;
 		exit(1);
@@ -73,10 +73,7 @@ int main(int argc, char* argv[])
 	
     //Start interface 
     interface(message,sockfd);
-    /*
-    cout <<"What message to send: ";
-	cin.getline(message,1024);
-	*/
+    
     //keep waiting on user commands then close socket. 
     close(sockfd);
 
@@ -85,12 +82,6 @@ int main(int argc, char* argv[])
 
 /*
  * Protocols to send and recieve from server host endsystem.
- *
- * RECEIVING PROTOCOLS
- * CTS:<filename> --> Receiving file contents 
- * ERR:<message>  --> Error message
- * PAS:<message>  --> Transfer was sucessful
- * 
  *
  * Commands to implement
  * GET:<filename>
@@ -105,28 +96,27 @@ void interface(char message[1024], int sockfd){
    bool stopWorking = false;
    char output[1024]; // Output message from server.
     int msgSize;
-   //Display Main Menu
+    cout << "You are now connected to the server\n" << endl;
+    //Display Main Menu
     cout << "-----------------------------------\n";
     cout << "| Use commands to access files from|\n";
     cout << "| the server.                      |\n";
+    cout << "| Commands:                        |\n";
+    cout << "| GET:<filename>                   |\n";
+    cout << "| PUT:<filename>                   |\n";
+    cout << "| QUIT                             |\n";
     cout << "-----------------------------------\n";
-
-    string input ="";
-   // char buffer[1024];
+   string input ="";
    while(!stopWorking){
     getline(cin,input);
     
     //get first four characters of input
     string command = input.substr(0,4);
     
-    //switch(command){
-      //  case "GET:":
 	if(command == "PUT:"){        
 	      string filename = input.substr(4);
           char* file = const_cast<char*>(filename.c_str());
 		  //call functions to retrieve file
-
-
 
          ifstream localFile(file);
          localFile.seekg(0,localFile.end);
@@ -160,14 +150,6 @@ void interface(char message[1024], int sockfd){
         		cerr << "Send error." << endl;
         	}
 	
-      //      send(sockfd, buffer,strlen(buffer),0);
-            /*	
-        	// Wait to receive response.
-        	if((msgSize = recv(sockfd, output, 1023, 0)) < 0) 
-        	{
-	        	cerr << "Receive error." << endl;
-        	}
-*/	
         
         //delete memory from buffer
         delete[] buffer;
@@ -219,19 +201,6 @@ void interface(char message[1024], int sockfd){
 		//quit on anything else
 		stopWorking = true;	
 	}
-	/*
-                  break;
-        case "PUT:":
-                  string filename = input.substr(4);
-                  // open and send file
-                  break;
-        case "QUIT":
-                  stopWorking = true;
-                  break;
-        default:
-                  break;
-            
-    }*/
         
    }
 }
