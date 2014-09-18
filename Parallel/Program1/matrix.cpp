@@ -11,8 +11,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <pthread.h>
-#include <random>
-#include <version>
+#include <vector>
 using namespace std;
 
 /*
@@ -29,10 +28,7 @@ int main(int argc, char* argv[]){
   }
    time_t start_seq;
    time_t end_seq;
-   //time(&start_seq);
-   default_random_engine generator;
-   geometric_distribution <int> distribution(0.3);
-
+   time(&start_seq);
    const int DIM = atoi(argv[2]);
    vector< vector<int> > A;
    vector< vector<int> > B;
@@ -42,15 +38,14 @@ int main(int argc, char* argv[]){
       for(int j=0; j< DIM; j++){
       //  A[i][j] = rand() % 100;
       //  B[i][j] = rand() % 100;
-          row.push_back(distribution(generator));
+          row.push_back(3 *i + j);
       }
      A.push_back(row);
      B.push_back(row); 
    }
-  // time(&end_seq);
-  // printf("Sequential Time Difference: %f", difftime(end_seq,start_seq));
+   time(&end_seq);
+   printf("Sequential Time Difference: %f", difftime(end_seq,start_seq));
     
-   printf("Value A: %d \n Value B: %d \n", A[DIM][0], B[DIM][0]);
-   
+   printf("Value A: %d \n Value B: %d \n", A[DIM-1][0], B[DIM-1][0]);
    return 0;
 }
