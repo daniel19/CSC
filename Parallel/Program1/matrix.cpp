@@ -14,11 +14,20 @@
 #include <vector>
 using namespace std;
 
+#define MAX_THREADS = 10;
+
+
 /*
  * Measure the time for the serial portion.
  *  *Variable declaration and thread declaration
  * Then measure running threads.
 */
+vector< vector<int> > A;
+vector< vector<int> > B;
+   
+
+int thread_count;
+void *multiply(void* rank);
 int main(int argc, char* argv[]){
   
   //Error check command line arguments
@@ -28,24 +37,55 @@ int main(int argc, char* argv[]){
   }
    time_t start_seq;
    time_t end_seq;
+   time_t start_par;
+   time_t end_par;
    time(&start_seq);
    const int DIM = atoi(argv[2]);
-   vector< vector<int> > A;
-   vector< vector<int> > B;
+   thread_count = atoi(argv[1]);
+  
+   //thread declaration
+   pthread_t* thread_handles;
+   long thread;
+
+   thread_handles =(pthread_t*) malloc(thread_count*sizeof(pthread_t)); // May or may not need this
+
+
+/*   if(thread_count > MAX_THREADS){
+       thread_count = MAX_THREADS;
+   }
+  */
+   
+      
+   
    //Generate random numbers into matrix A and matrix B
    for(int i =0; i< DIM; i++){
        vector<int> row;
       for(int j=0; j< DIM; j++){
-      //  A[i][j] = rand() % 100;
-      //  B[i][j] = rand() % 100;
           row.push_back(3 *i + j);
       }
      A.push_back(row);
      B.push_back(row); 
    }
    time(&end_seq);
-   printf("Sequential Time Difference: %f", difftime(end_seq,start_seq));
-    
-   printf("Value A: %d \n Value B: %d \n", A[DIM-1][0], B[DIM-1][0]);
+  // printf("Sequential Time Difference: %f", difftime(end_seq,start_seq));
+   
+    time(&start_par);
+    for(thread = 0; thread < thread_count; thread++){
+        pthread_create(&thread_handles[thread], NULL, multiply,(void*) thread);
+    }
+
+    for(thread = 0; thread < thread_count; thread++){
+        pthread_join(thread_handles[thread], NULL);
+    }
+    time(&end_par);
+
+   
    return 0;
 }
+
+
+void* multiply(void* rank){
+    //printf("Thread %ld \n", (long) rank);
+    return NULL;
+}
+
