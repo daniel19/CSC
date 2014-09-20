@@ -36,11 +36,11 @@ int main(int argc, char* argv[]){
    fprintf(stderr, "Usage: ./matrix [# of threads] [matrix dimensions]");
    exit(1);
   }
-   time_t start_seq;
-   time_t end_seq;
-   time_t start_par;
-   time_t end_par;
-   time(&start_seq);
+   float start_seq;
+   float end_seq;
+   float start_par;
+   float end_par;
+   start_seq = (float)clock()/CLOCKS_PER_SEC;
    DIM = atoi(argv[2]);
    thread_count = atoi(argv[1]);
   
@@ -70,10 +70,10 @@ int main(int argc, char* argv[]){
      B.push_back(row); 
      C.push_back(row2);
    }
-   time(&end_seq);
+   end_seq = (float) clock()/CLOCKS_PER_SEC;
   // printf("Sequential Time Difference: %f", difftime(end_seq,start_seq));
    
-    time(&start_par);
+    start_par = (float)clock()/CLOCKS_PER_SEC;
     for(thread = 0; thread < thread_count; thread++){
         pthread_create(&thread_handles[thread], NULL, multiply,(void*) thread);
     }
@@ -81,14 +81,14 @@ int main(int argc, char* argv[]){
     for(thread = 0; thread < thread_count; thread++){
         pthread_join(thread_handles[thread], NULL);
     }
-    time(&end_par);
+    end_par=(float) clock()/CLOCKS_PER_SEC;
 
   
    //Calculate Speedup
-   double diff_seq = difftime(end_seq, start_seq);
-   double diff_par = difftime(end_par, start_par);
-   double speedup = difftime(end_seq, start_seq)/difftime(end_par, start_par);
-   double efficiency = speedup/thread_count;
+   float diff_seq = end_seq - start_seq;
+   float diff_par = end_par - start_par;
+   float speedup = diff_seq/diff_par;
+   float efficiency = speedup/thread_count;
 
    printf("Difference sequential %f; Difference parallel %f \n", diff_seq, diff_par);
    printf("Speedup of %d threads is %f \n", thread_count, speedup);
