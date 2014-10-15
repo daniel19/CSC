@@ -13,7 +13,7 @@
 #include <pthread.h>
 #include <vector>
 using namespace std;
-
+void printVector(vector< vector<int> > A);
 const int MAX_THREADS = 10;
 
 
@@ -93,11 +93,23 @@ int main(int argc, char* argv[]){
    printf("Difference sequential %f; Difference parallel %f \n", diff_seq, diff_par);
    printf("Speedup of %d threads is %f \n", thread_count, speedup);
    printf("Efficiency is %f \n", efficiency);
-
+   printf("\n");
+   printVector(C);
     return 0;
 }
 
-
+void printVector(vector< vector<int> > A){
+    for(int i =0; i < DIM;i++){
+        printf("-");
+    }
+    printf("\n");
+    for(int k=0; k < DIM; k++){
+       for(int j=0; j < DIM; j++){
+          printf("| %d | ", A[k][j]);
+       }
+       printf("\n");
+    }
+}
 void* multiply(void* rank){
     //printf("Thread %ld \n", (long) rank);
     long myrank = (long) rank;
@@ -110,7 +122,7 @@ void* multiply(void* rank){
     for(int i = first_row; i <= last_row; i++){
         for(int j =0; j < DIM; j++){
            for( int k=0; k < DIM; k++){
-            C[i][k] = C[i][k] + A[i][j]*B[j][k];
+            C[i][j] = C[i][k] + A[i][j]*B[j][k];
            } 
         }
     }    
