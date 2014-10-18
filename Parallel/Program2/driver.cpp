@@ -31,6 +31,8 @@ int main(int argc, char* argv[]){
     float end_par;
     start_seq = (float)clock()/CLOCKS_PER_SEC;
     createGeneration(atoi(argv[2]));
+    printArray(currentGen);
+    printf("\n");
     //Make copy of initial generation 
     duplicateGeneration();
     
@@ -47,8 +49,6 @@ int main(int argc, char* argv[]){
     printf("Speedup of %d threads is %f \n", thread_count, speedup);
     printf("Efficiency is %f \n", efficiency);
     printf("\n");
-    printArray(currentGen);
-    printf("\n");
     printArray(nextGen);
     delete currentGen;
     delete nextGen;
@@ -59,13 +59,13 @@ void update(){
     for(int i = 0; i < DIM; i++){
         for(int j = 0; j < DIM; j++){
             nextGen[i][j] = rule(neighbors(i,j), currentGen[i][j], i,j);
-            printf("Value of (%d, %d) : %d\n",i, j, nextGen[i][j]); 
         }
     }    
 }
 
 int rule(int numberOfLiveNeighbors, int cellState, int row, int column){
     //Check for the correct response to the number of neighbors and current state of cell
+            printf("Rule at (%d, %d) : numberOfLiveNeighbors: %d , cellState: %d \n",row, column,numberOfLiveNeighbors, cellState);
     if(numberOfLiveNeighbors > 2 && cellState ==1){
         return 0;
     }else if((numberOfLiveNeighbors == 2 || numberOfLiveNeighbors == 3) && cellState ==1){
@@ -74,145 +74,52 @@ int rule(int numberOfLiveNeighbors, int cellState, int row, int column){
         return 0;
     }else if(numberOfLiveNeighbors ==3 && cellState ==0){
         return 1;
+    }else{
+        return 0;
     }
 
 }
 int neighbors(int row, int column){
-    int count = 0;
-    //check the edge case neighbors next to cell
-    if(row == 0 || column == 0){//first row or first column
-        if(row == 0 && column > 0){
-            //get top
-            if(currentGen[DIM -1][column] ==1)
-                count++;
-            //check bottom
-            if(currentGen[row+1][column] == 1)
-                count++;
-            //check left
-            if(currentGen[row][column-1] == 1)
-                count++;
-            //check right
-            if(currentGen[row][column+1] == 1)
-               count++;
-            //check left top corner
-            if(currentGen[DIM-1][column-1] == 1)
-              count++;
-           //check left bottom corner
-            if(currentGen[row+1][column-1] == 1)
-              count++;
-            //check right top corner
-            if(currentGen[DIM-1][column+1] == 1)
-              count++;
-           //check left bottom corner
-            if(currentGen[row+1][column+1] == 1)
-              count++;
-
-       }else if( row > 0 && row < DIM-1 && column == 0){
-            //get top
-            if(currentGen[row -1][column] ==1)
-                count++;
-            //check bottom
-            if(currentGen[row+1][column] == 1)
-                count++;
-            //check left
-            if(currentGen[row][DIM-1] == 1)
-                count++;
-            //check right
-            if(currentGen[row][column+1] == 1)
-               count++;
-            //check left top corner
-            if(currentGen[row-1][DIM-1] == 1)
-              count++;
-           //check left bottom corner
-            if(currentGen[row+1][DIM-1] == 1)
-              count++;
-            //check right top corner
-            if(currentGen[row-1][column+1] == 1)
-              count++;
-           //check right bottom corner
-            if(currentGen[row+1][column+1] == 1)
-              count++;
-        }
-
-    }else if( (row > 0 || column > 0) && (row < DIM-1 && column < DIM -1)){//regular cases
-        //check left
-        if(currentGen[row][column-1] == 1)
-           count++;
-       //check right
-       if(currentGen[row][column+1] == 1)
-          count++;
-       //check up
-       if(currentGen[row-1][column] == 1)
-          count++;
-       //check down
-       if(currentGen[row+1][column] == 1)
-          count++;
-       //check left top corner
-        if(currentGen[row-1][column-1] == 1)
-          count++;
-       //check left bottom corner
-        if(currentGen[row+1][column-1] == 1)
-          count++;
-        //check right top corner
-        if(currentGen[row-1][column+1] == 1)
-          count++;
-       //check left bottom corner
-        if(currentGen[row+1][column+1] == 1)
-          count++;
-    }else if(row == DIM-1 || column == DIM-1){
-        if(row == DIM-1 && column < DIM){
-            //check left
-            if(currentGen[row][column-1] == 1)
-               count++;
-           //check right
-           if(currentGen[row][column+1] == 1)
-              count++;
-           //check up
-           if(currentGen[row-1][column] == 1)
-              count++;
-           //check down
-           if(currentGen[0][column] == 1)
-              count++;
-           //check left top corner
-            if(currentGen[row-1][column-1] == 1)
-              count++;
-           //check left bottom corner
-            if(currentGen[0][column-1] == 1)
-              count++;
-            //check right top corner
-            if(currentGen[row-1][column+1] == 1)
-              count++;
-           //check left bottom corner
-            if(currentGen[0][column+1] == 1)
-              count++;
-        }else if( row < DIM && column == DIM-1){
-            //check left
-            if(currentGen[row][column-1] == 1)
-               count++;
-           //check right
-           if(currentGen[row][0] == 1)
-              count++;
-           //check up
-           if(currentGen[row-1][column] == 1)
-              count++;
-           //check down
-           if(currentGen[row+1][column] == 1)
-              count++;
-           //check left top corner
-            if(currentGen[row-1][column-1] == 1)
-              count++;
-           //check left bottom corner
-            if(currentGen[row+1][column-1] == 1)
-              count++;
-            //check right top corner
-            if(currentGen[row-1][0] == 1)
-              count++;
-           //check left bottom corner
-            if(currentGen[row+1][0] == 1)
-              count++;
+    int result=0;
+    
+    if(row==0 || row == DIM-1 || column ==0 || column == DIM-1){
+         for(int i=row-1; i < row+2; i++){
+            for(int j=column-1; j< column+2; j++){
+                if(i==row && j == column){
+                    continue;
+                }
+                if(i < 0){//on the first row check the last row to wrap around 
+                    if(j <0){//on the first column check the last column to wrap around
+                        result += currentGen[DIM-1][DIM-1];
+                    }else{
+                        result += currentGen[DIM-1][j];
+                    }
+                }else if(j<0 && !(i==DIM)){
+                    result+= currentGen[i][DIM-1];
+                }else if(i == DIM-1){
+                    if(j == DIM-1){
+                        result += currentGen[0][0];
+                    }else{
+                        result += currentGen[0][j];
+                    }
+                }else if(j == DIM-1 && !(i == DIM)){
+                    result += currentGen[i][0];
+                }                
+            }
+         }
+    }else{//for general cases not on the first or last row and columns
+        for(int i=row-1; i < row+2; i++){
+            for(int j=column-1; j< column+2; j++){
+                if(i==row && j == column){
+                    continue;
+                }
+                if(i > -1 && j > -1 && i < DIM && j < DIM ){
+                    result += currentGen[i][j];
+                }
+            }
         }
     }
-    return count;
+    return result;
 }
 
 
