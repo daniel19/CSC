@@ -1,0 +1,5 @@
+
+Difference sequential 2.650000; Difference parallel 441.619995 
+Speedup of 4 threads is 0.006001 
+Efficiency is 0.001500 
+
