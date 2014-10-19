@@ -1,4 +1,4 @@
-#include <pthread.h>
+#include <omp.h>   
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +8,7 @@ using namespace std;
 int** currentGen;
 int** nextGen;
 int thread_count;
+const int GEN = 100;
 int DIM;
 
 //Forward Declaration
@@ -31,15 +32,18 @@ int main(int argc, char* argv[]){
     float end_par;
     start_seq = (float)clock()/CLOCKS_PER_SEC;
     createGeneration(atoi(argv[2]));
-    printArray(currentGen);
+    //printArray(currentGen);
     printf("\n");
     //Make copy of initial generation 
     duplicateGeneration();
+    end_seq = (float) clock()/CLOCKS_PER_SEC;
     
     //run sequentially Conway's rules for the Game of Life
+    start_par = (float)clock()/CLOCKS_PER_SEC;
     update();
+    #pragma omp barrier
+    end_par=(float) clock()/CLOCKS_PER_SEC;
 
-    end_seq = (float) clock()/CLOCKS_PER_SEC;
     float diff_seq = end_seq - start_seq;
     float diff_par = end_par - start_par;
     float speedup = diff_seq/diff_par;
@@ -49,24 +53,36 @@ int main(int argc, char* argv[]){
     printf("Speedup of %d threads is %f \n", thread_count, speedup);
     printf("Efficiency is %f \n", efficiency);
     printf("\n");
-    printArray(nextGen);
-    delete currentGen;
-    delete nextGen;
+    //printArray(nextGen);
+    for(int i=0; i < DIM; i++){
+        delete[] currentGen[i];
+        delete[] nextGen[i];
+    }
+    delete[] currentGen;
+    delete[] nextGen;
     return 0;
 }
 
+
 void update(){
-    for(int i = 0; i < DIM; i++){
-        for(int j = 0; j < DIM; j++){
-            nextGen[i][j] = rule(neighbors(i,j), currentGen[i][j], i,j);
+    for(int iter =0; iter<GEN; iter++){
+        #pragma omp parallel num_threads(thread_count)
+        for(int i = 0; i < DIM; i++){
+            for(int j = 0; j < DIM; j++){
+                nextGen[i][j] = rule(neighbors(i,j), currentGen[i][j], i,j);
+            }
         }
-    }    
+        #pragma omp barrier
+        int temp = **currentGen;
+        **currentGen = **nextGen;
+        **nextGen = temp;    
+    }
 }
 
 int rule(int numberOfLiveNeighbors, int cellState, int row, int column){
     //Check for the correct response to the number of neighbors and current state of cell
-            printf("Rule at (%d, %d) : numberOfLiveNeighbors: %d , cellState: %d \n",row, column,numberOfLiveNeighbors, cellState);
-    if(numberOfLiveNeighbors > 2 && cellState ==1){
+ // printf("Rule at (%d, %d) : numberOfLiveNeighbors: %d , cellState: %d \n",row, column,numberOfLiveNeighbors, cellState);
+  /*  if(numberOfLiveNeighbors > 2 && cellState ==1){
         return 0;
     }else if((numberOfLiveNeighbors == 2 || numberOfLiveNeighbors == 3) && cellState ==1){
         return 1;
@@ -76,50 +92,49 @@ int rule(int numberOfLiveNeighbors, int cellState, int row, int column){
         return 1;
     }else{
         return 0;
-    }
+    }*/
 
+    switch(numberOfLiveNeighbors){
+        case 3:
+            if(cellState ==1)
+                return 1;
+            else
+                return 0;
+        case 2:
+            if(cellState == 1)
+                return 1;
+            else
+                return 0;
+        default:
+            if(numberOfLiveNeighbors > 2 && cellState == 1)
+                return 0;
+            else
+                return 0;
+
+    }
 }
 int neighbors(int row, int column){
-    int result=0;
-    
-    if(row==0 || row == DIM-1 || column ==0 || column == DIM-1){
-         for(int i=row-1; i < row+2; i++){
-            for(int j=column-1; j< column+2; j++){
-                if(i==row && j == column){
-                    continue;
-                }
-                if(i < 0){//on the first row check the last row to wrap around 
-                    if(j <0){//on the first column check the last column to wrap around
-                        result += currentGen[DIM-1][DIM-1];
-                    }else{
-                        result += currentGen[DIM-1][j];
-                    }
-                }else if(j<0 && !(i==DIM)){
-                    result+= currentGen[i][DIM-1];
-                }else if(i == DIM-1){
-                    if(j == DIM-1){
-                        result += currentGen[0][0];
-                    }else{
-                        result += currentGen[0][j];
-                    }
-                }else if(j == DIM-1 && !(i == DIM)){
-                    result += currentGen[i][0];
-                }                
-            }
-         }
-    }else{//for general cases not on the first or last row and columns
-        for(int i=row-1; i < row+2; i++){
-            for(int j=column-1; j< column+2; j++){
-                if(i==row && j == column){
-                    continue;
-                }
-                if(i > -1 && j > -1 && i < DIM && j < DIM ){
-                    result += currentGen[i][j];
-                }
-            }
-        }
-    }
+    int left, right, top, bottom;
+    left = column-1;
+    right = column+1;
+    top = row-1;
+    bottom = row+1;
+    if(left < 0) left+= DIM-1;
+    if(right == DIM-1) right=0;
+    if(top < 0) top += DIM-1;
+    if(bottom == DIM-1) bottom = 0;
+
+    int result =0;
+    result += currentGen[top][left];
+    result += currentGen[top][column];
+    result += currentGen[top][right];
+    result += currentGen[row][left];
+    result += currentGen[row][right];
+    result += currentGen[bottom][left];
+    result += currentGen[bottom][right];
+    result += currentGen[bottom][column];
     return result;
+    
 }
 
 

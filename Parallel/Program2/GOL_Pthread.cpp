@@ -37,7 +37,7 @@ int main(int argc, char* argv[]){
     float end_par;
     start_seq = (float)clock()/CLOCKS_PER_SEC;
     createGeneration(atoi(argv[2]));
-    printArray(currentGen);
+    //printArray(currentGen);
     printf("\n");
     //Make copy of initial generation 
     duplicateGeneration();
@@ -69,7 +69,7 @@ int main(int argc, char* argv[]){
     printf("Speedup of %d threads is %f \n", thread_count, speedup);
     printf("Efficiency is %f \n", efficiency);
     printf("\n");
-    printArray(nextGen);
+   // printArray(nextGen);
     for(int i=0; i < DIM; i++){
         delete[] currentGen[i];
         delete[] nextGen[i];
@@ -111,17 +111,24 @@ void update(){
 
 int rule(int numberOfLiveNeighbors, int cellState, int row, int column){
     //Check for the correct response to the number of neighbors and current state of cell
-            printf("Rule at (%d, %d) : numberOfLiveNeighbors: %d , cellState: %d \n",row, column,numberOfLiveNeighbors, cellState);
-    if(numberOfLiveNeighbors > 2 && cellState ==1){
-        return 0;
-    }else if((numberOfLiveNeighbors == 2 || numberOfLiveNeighbors == 3) && cellState ==1){
-        return 1;
-    }else if(numberOfLiveNeighbors > 3 && cellState ==1){
-        return 0;
-    }else if(numberOfLiveNeighbors ==3 && cellState ==0){
-        return 1;
-    }else{
-        return 0;
+    // printf("Rule at (%d, %d) : numberOfLiveNeighbors: %d , cellState: %d \n",row, column,numberOfLiveNeighbors, cellState);
+    switch(numberOfLiveNeighbors){
+        case 3:
+            if(cellState ==1)
+                return 1;
+            else
+                return 0;
+        case 2:
+            if(cellState == 1)
+                return 1;
+            else
+                return 0;
+        default:
+            if(numberOfLiveNeighbors > 2 && cellState == 1)
+                return 0;
+            else
+                return 0;
+
     }
 
 }
