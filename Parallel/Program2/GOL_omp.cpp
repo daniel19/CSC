@@ -66,16 +66,19 @@ int main(int argc, char* argv[]){
 
 void update(){
     for(int iter =0; iter<GEN; iter++){
-        #pragma omp parallel num_threads(thread_count)
+        #pragma omp parallel  num_threads(thread_count)
         for(int i = 0; i < DIM; i++){
             for(int j = 0; j < DIM; j++){
                 nextGen[i][j] = rule(neighbors(i,j), currentGen[i][j], i,j);
             }
         }
         #pragma omp barrier
-        int temp = **currentGen;
-        **currentGen = **nextGen;
-        **nextGen = temp;    
+            #pragma omp single
+            {
+            int temp = **currentGen;
+            **currentGen = **nextGen;
+            **nextGen = temp;  
+            }  
     }
 }
 

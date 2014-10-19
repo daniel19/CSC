@@ -26,3 +26,28 @@ Difference sequential 2.871744; Difference parallel 536.074097
 Speedup of 2 threads is 0.005357 
 Efficiency is 0.002678 
 
+
+Difference sequential 3.590000; Difference parallel 460.339996 
+Speedup of 2 threads is 0.007799 
+Efficiency is 0.003899 
+
+
+Difference sequential 2.470000; Difference parallel 459.609985 
+Speedup of 4 threads is 0.005374 
+Efficiency is 0.001344 
+
+
+Difference sequential 2.470000; Difference parallel 461.630005 
+Speedup of 8 threads is 0.005351 
+Efficiency is 0.000669 
+
+
+Difference sequential 2.470000; Difference parallel 461.109985 
+Speedup of 12 threads is 0.005357 
+Efficiency is 0.000446 
+
+
+Difference sequential 2.390000; Difference parallel 461.609985 
+Speedup of 16 threads is 0.005178 
+Efficiency is 0.000324 
+
