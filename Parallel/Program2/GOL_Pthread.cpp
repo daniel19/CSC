@@ -2,6 +2,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "pthread_barrier.h"
 using namespace std;
 
 //Global variables
@@ -98,6 +99,7 @@ void* parallel_update(void* rank){
         **currentGen = **nextGen;
         **nextGen = temp;
    } 
+    return NULL;
 }
 void update(){
     for(int i = 0; i < DIM; i++){
