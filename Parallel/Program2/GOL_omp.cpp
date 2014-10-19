@@ -66,20 +66,23 @@ int main(int argc, char* argv[]){
 
 void update(){
     for(int iter =0; iter<GEN; iter++){
-        #pragma omp parallel  num_threads(thread_count)
-        for(int i = 0; i < DIM; i++){
-            for(int j = 0; j < DIM; j++){
-                nextGen[i][j] = rule(neighbors(i,j), currentGen[i][j], i,j);
-            }
-        }
-        #pragma omp barrier
+        #pragma omp parallel num_threads(thread_count)
+	{
+		#pragma omp for
+		for(int i = 0; i < DIM; i++){
+		    for(int j = 0; j < DIM; j++){
+			nextGen[i][j] = rule(neighbors(i,j), currentGen[i][j], i,j);
+		    }
+		}
+            #pragma omp barrier
             #pragma omp single
             {
             int temp = **currentGen;
             **currentGen = **nextGen;
             **nextGen = temp;  
             }  
-    }
+    	}
+   }
 }
 
 int rule(int numberOfLiveNeighbors, int cellState, int row, int column){
@@ -123,9 +126,9 @@ int neighbors(int row, int column){
     top = row-1;
     bottom = row+1;
     if(left < 0) left+= DIM-1;
-    if(right == DIM-1) right=0;
+    if(right == DIM) right=0;
     if(top < 0) top += DIM-1;
-    if(bottom == DIM-1) bottom = 0;
+    if(bottom == DIM) bottom = 0;
 
     int result =0;
     result += currentGen[top][left];

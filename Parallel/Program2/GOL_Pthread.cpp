@@ -139,9 +139,9 @@ int neighbors(int row, int column){
     top = row-1;
     bottom = row+1;
     if(left < 0) left+= DIM-1;
-    if(right == DIM-1) right=0;
+    if(right == DIM) right=0;
     if(top < 0) top += DIM-1;
-    if(bottom == DIM-1) bottom = 0;
+    if(bottom == DIM) bottom = 0;
 
     int result =0;
     result += currentGen[top][left];
