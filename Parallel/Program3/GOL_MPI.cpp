@@ -174,7 +174,7 @@ void createGeneration(int dimensions, vector< vector<int> > currentGen){
     for(int i = first_row; i < last_row; i++){
         for(int j=0; j < dimensions; j++){
             for(int k=0; k < dimensions; k++){
-                currentGen[j][k] = rand() % 2;//Fill cells randomly
+                currentGen[j].push_back(rand() % 2);//Fill cells randomly
             }
         }
     }
