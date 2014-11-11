@@ -7,9 +7,9 @@ using namespace std;
 int DIM;
 int rank;
 int thread_count;
-
 //Forward Declaration
-void createGeneration(int dimensions, vector< vector<int> > currentGen);
+void printVec(vector<int> a);
+vector< vector<int> > createGeneration(int dimensions);
 void printArray(vector< vector<int> > A);
 void update(vector< vector<int> > A, vector< vector<int> > B);
 int rule(int numberOfLiveNeighbors, int cellState, int row, int column);
@@ -34,9 +34,13 @@ int main(int argc, char* argv[]){
     float start_par;
     float end_par;
     start_seq = (float)clock()/CLOCKS_PER_SEC;
-    createGeneration(atoi(argv[1]),currentGen);
+    
+    currentGen = createGeneration(atoi(argv[1]));
+    
     //printArray(currentGen);
     printf("\n");
+    printf("Size of Current gen for rank %d, is %d", rank, (int)currentGen.size());
+    
     //Make copy of initial generation 
     nextGen = currentGen;
     end_seq = (float) clock()/CLOCKS_PER_SEC;
@@ -44,12 +48,12 @@ int main(int argc, char* argv[]){
     //run sequentially Conway's rules for the Game of Life
     start_par = (float)clock()/CLOCKS_PER_SEC;
     //update after each generation
-    for(int iter =0; iter < GEN; iter++){
+    /*for(int iter =0; iter < GEN; iter++){
         update(currentGen, nextGen);
         vector< vector<int> > temp = currentGen;
         currentGen = nextGen;
         nextGen = temp;
-    }
+    }*/
     end_par=(float) clock()/CLOCKS_PER_SEC;
 
     float diff_seq = end_seq - start_seq;
@@ -61,23 +65,27 @@ int main(int argc, char* argv[]){
     printf("Speedup of %d threads is %f \n", thread_count, speedup);
     printf("Efficiency is %f \n", efficiency);
     printf("\n");
+
+    MPI_Finalize();
     return 0;
 }
 
 void update(vector< vector<int> > A, vector< vector<int> > B){
     vector<int> topRow;
     vector<int> bottomRow;
+    topRow.resize(DIM-1);
+    bottomRow.resize(DIM-1);
     MPI_Status status;
     MPI_Request req_recvAbove, req_recvBelow, req_sendAbove, req_sendBelow;
     //Send and Receive rows to other processes
     if(rank != 0){
         //Receive bottom row from neighbor above
+        printf("Receiving bottom row from rank %d",rank);
         MPI_Irecv(&bottomRow[0], DIM, MPI_INT, rank-1, NULL, MPI_COMM_WORLD, &req_recvAbove);
     }
-
     if(rank != thread_count-1){
         //Receive top row from neighbor below
-        MPI_Irecv(&topRow[0], DIM, MPI_INT, rank-1, NULL, MPI_COMM_WORLD, &req_recvBelow);
+        MPI_Irecv(&topRow[0], DIM, MPI_INT, rank+1, NULL, MPI_COMM_WORLD, &req_recvBelow);
     }
 
     if(rank !=0){
@@ -87,6 +95,7 @@ void update(vector< vector<int> > A, vector< vector<int> > B){
 
     if(rank != thread_count-1){
         //Send bottom row to neighbor below
+        printf("Sending bottom row from rank %d: size of row: %d",rank, (int)A.size()-1);
         MPI_Isend(&A.at(A.size()-1), DIM, MPI_INT, rank+1, NULL, MPI_COMM_WORLD, &req_sendBelow);
     }
     
@@ -106,12 +115,13 @@ void update(vector< vector<int> > A, vector< vector<int> > B){
    if (rank != (thread_count-1)) {
        // send bottom row to neighbor "below"
        MPI_Wait(&req_sendBelow, &status);
-  } 
+   } 
 
     vector< vector<int> >::iterator it;
     it = A.begin();
     A.insert(it, topRow);
     A.push_back(bottomRow);
+ 
     for(int i = 0; i < (int)A.size(); i++){
         for(int j = 0; j < (int)A.at(0).size(); j++){
             B[i][j] = rule(neighbors(i,j, A), A[i][j], i,j);
@@ -163,23 +173,37 @@ int neighbors(int row, int column, vector< vector<int> > A){
 /*
  *Separate matrix based on the number of processes created.
  */
-void createGeneration(int dimensions, vector< vector<int> > currentGen){
+vector< vector<int> > createGeneration(int dimensions){
     DIM = dimensions;
+    vector< vector<int> > currentGen;
     int first_row, last_row, local;
+    
     local = dimensions/thread_count;
     first_row = rank*local;
     last_row = (rank+1)*local - 1; 
+    
     srand(time(NULL));
+    int randSeed = rank+1;
     //fill partitioned matrix with random 0s and 1s
-    for(int i = first_row; i < last_row; i++){
-        for(int j=0; j < dimensions; j++){
+    for(int i = first_row; i <= last_row; i++){
+            vector<int> temp;
             for(int k=0; k < dimensions; k++){
-                currentGen[j].push_back(rand() % 2);//Fill cells randomly
+                //currentGen[j].push_back(rand() % 2);//Fill cells randomly
+                //currentGen[j][k] = rand() % 2;
+                temp.push_back(rand() %2*randSeed);
             }
-        }
+            currentGen.push_back(temp);
+            printf("Partition for rank %d \n", rank); 
+            printVec(temp);
     }
+    return currentGen;
 }
-
+void printVec(vector<int> a){
+    for(int i=0; i < (int)a.size(); i++){
+        printf("%d ", a[i]);
+    }
+    printf("\n");
+}
 void printArray(vector< vector<int> > a){
     for(int k=0; k < DIM; k++){
        for(int j=0; j < DIM; j++){
