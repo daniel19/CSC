@@ -2,22 +2,23 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <vector>
 using namespace std;
+int** currentGen;
+int** nextGen;
 int DIM;
 int rank;
 int count;
 int thread_count;
+
 //Forward Declaration
-void printVec(vector<int> a);
-vector< vector<int> > createGeneration(int dimensions);
-void printArray(vector< vector<int> > A);
-void update(vector< vector<int> > A, vector< vector<int> > B);
+void printRow(int *[] a);
+void createGeneration(int dimensions);
+void printArray(int** A);
+void update(int** A, int** B);
 int rule(int numberOfLiveNeighbors, int cellState, int row, int column);
 int neighbors(int row, int column, vector< vector<int> > A); 
 
 int main(int argc, char* argv[]){
-    vector< vector<int> > currentGen;
     count = 0;
     const int GEN = 100;
     if(argc < 2){

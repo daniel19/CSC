@@ -16,6 +16,7 @@ pthread_barrier_t barrier;
 //Forward Declaration
 void createGeneration(int dimensions);
 void duplicateGeneration();
+void copyGeneration();
 void printArray(int** a);
 int rule(int numberOfLiveNeighbors, int cellState, int row, int column);
 void update();
@@ -94,10 +95,11 @@ void* parallel_update(void* rank){
         }
         //Add barrier wait for sync
         pthread_barrier_wait(&barrier);
-        //swap pointers after each generation finishes
+        /*swap pointers after each generation finishes
         int temp = **currentGen;
         **currentGen = **nextGen;
-        **nextGen = temp;
+        **nextGen = temp;*/
+        copyGeneration();
    } 
     return NULL;
 }
@@ -154,6 +156,18 @@ int neighbors(int row, int column){
     result += currentGen[bottom][column];
     return result;
     
+}
+
+void copyGeneration(){
+    for(int i = 0; i < DIM; i++){
+        nextGen[i] = currentGen[i];
+    }
+    for(int j=0; j < DIM; j++){
+        for(int k=0; k < DIM; k++){
+            nextGen[j][k] = currentGen[j][k];
+        }
+    }
+
 }
 
 

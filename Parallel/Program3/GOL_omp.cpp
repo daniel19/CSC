@@ -13,6 +13,7 @@ int DIM;
 
 //Forward Declaration
 void createGeneration(int dimensions);
+void copyGeneration();
 void duplicateGeneration();
 void printArray(int** a);
 void update();
@@ -79,9 +80,10 @@ void update(){
             #pragma omp barrier
             #pragma omp single
             {
-            int temp = **currentGen;
-            **currentGen = **nextGen;
-            **nextGen = temp;  
+                /*int temp = **currentGen;
+                **currentGen = **nextGen;
+                **nextGen = temp;  */
+                copyGeneration();
             }  
     	}
    }
@@ -89,20 +91,7 @@ void update(){
 
 int rule(int numberOfLiveNeighbors, int cellState, int row, int column){
     //Check for the correct response to the number of neighbors and current state of cell
- // printf("Rule at (%d, %d) : numberOfLiveNeighbors: %d , cellState: %d \n",row, column,numberOfLiveNeighbors, cellState);
-  /*  if(numberOfLiveNeighbors > 2 && cellState ==1){
-        return 0;
-    }else if((numberOfLiveNeighbors == 2 || numberOfLiveNeighbors == 3) && cellState ==1){
-        return 1;
-    }else if(numberOfLiveNeighbors > 3 && cellState ==1){
-        return 0;
-    }else if(numberOfLiveNeighbors ==3 && cellState ==0){
-        return 1;
-    }else{
-        return 0;
-    }*/
-
-    switch(numberOfLiveNeighbors){
+     switch(numberOfLiveNeighbors){
         case 3:
             if(cellState ==1)
                 return 1;
@@ -145,6 +134,17 @@ int neighbors(int row, int column){
     
 }
 
+void copyGeneration(){
+    for(int i = 0; i < DIM; i++){
+        nextGen[i] = currentGen[i];
+    }
+    for(int j=0; j < DIM; j++){
+        for(int k=0; k < DIM; k++){
+            nextGen[j][k] = currentGen[j][k];
+        }
+    }
+
+}
 
 void duplicateGeneration(){
     nextGen = new int* [DIM];
