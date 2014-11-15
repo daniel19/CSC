@@ -99,7 +99,9 @@ void* parallel_update(void* rank){
         int temp = **currentGen;
         **currentGen = **nextGen;
         **nextGen = temp;*/
-        copyGeneration();
+        if(myrank == 0){
+            copyGeneration();
+        }
    } 
     return NULL;
 }
