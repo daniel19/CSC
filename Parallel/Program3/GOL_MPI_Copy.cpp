@@ -40,24 +40,17 @@ int main(int argc, char* argv[]){
     start_seq = (float)clock()/CLOCKS_PER_SEC;
     
     createGeneration(DIM);
-    duplicateGeneration();
-    printf("\n");
-    
     //Make copy of initial generation 
-    printArray(currentGen); 
-    printf("\n");
-    printf("\n");
-    printArray(nextGen); 
-   
+    duplicateGeneration();
+    
     end_seq = (float) clock()/CLOCKS_PER_SEC;
     
     //run sequentially Conway's rules for the Game of Life
     start_par = (float)clock()/CLOCKS_PER_SEC;
     //update after each generation
     for(int iter =0; iter < GEN; iter++){
-        update();
-        if(rank == 0)
-           copyGeneration(); 
+       update();
+       copyGeneration(); 
     }
     end_par=(float) clock()/CLOCKS_PER_SEC;
 
@@ -122,7 +115,6 @@ void update(){
 
     for(int i = 0; i < DIM; i++){
         for(int j = 0; j < DIM; j++){
-            printf("i: %d j: %d\n\n", i, j);
             nextGen[i][j] = rule(neighbors(i,j), currentGen[i][j], i,j);
         }
     }
