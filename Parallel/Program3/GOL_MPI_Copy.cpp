@@ -162,9 +162,6 @@ int neighbors(int row, int column){
 }
 
 void copyGeneration(){
-    for(int i = 0; i < DIM; i++){
-        nextGen[i] = currentGen[i];
-    }
     for(int j=0; j < DIM; j++){
         for(int k=0; k < DIM; k++){
             nextGen[j][k] = currentGen[j][k];

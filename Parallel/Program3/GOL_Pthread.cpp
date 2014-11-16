@@ -43,7 +43,6 @@ int main(int argc, char* argv[]){
     //Make copy of initial generation 
     duplicateGeneration();
     //run sequentially Conway's rules for the Game of Life
-    //update();
     
     pthread_t* thread_handles;
     long thread;
@@ -70,7 +69,7 @@ int main(int argc, char* argv[]){
     printf("Speedup of %d threads is %f \n", thread_count, speedup);
     printf("Efficiency is %f \n", efficiency);
     printf("\n");
-   // printArray(nextGen);
+    printArray(nextGen);
     for(int i=0; i < DIM; i++){
         delete[] currentGen[i];
         delete[] nextGen[i];
@@ -95,10 +94,6 @@ void* parallel_update(void* rank){
         }
         //Add barrier wait for sync
         pthread_barrier_wait(&barrier);
-        /*swap pointers after each generation finishes
-        int temp = **currentGen;
-        **currentGen = **nextGen;
-        **nextGen = temp;*/
         if(myrank == 0){
             copyGeneration();
         }
@@ -161,9 +156,6 @@ int neighbors(int row, int column){
 }
 
 void copyGeneration(){
-    for(int i = 0; i < DIM; i++){
-        nextGen[i] = currentGen[i];
-    }
     for(int j=0; j < DIM; j++){
         for(int k=0; k < DIM; k++){
             nextGen[j][k] = currentGen[j][k];
