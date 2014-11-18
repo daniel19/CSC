@@ -7,7 +7,7 @@ int** currentGen;
 int** nextGen;
 int DIM;
 int rank;
-int count;
+int rows;
 int thread_count;
 
 //Forward Declaration
@@ -21,7 +21,7 @@ int rule(int numberOfLiveNeighbors, int cellState, int row, int column);
 int neighbors(int row, int column); 
 
 int main(int argc, char* argv[]){
-    count = 0;
+    rows = 0;
     const int GEN = 100;
     if(argc < 2){
       fprintf(stderr, "Usage: ./mpiGOL [matrix dimensions]");
@@ -53,7 +53,7 @@ int main(int argc, char* argv[]){
        copyGeneration(); 
     }
     end_par=(float) clock()/CLOCKS_PER_SEC;
-
+/*
     float diff_seq = end_seq - start_seq;
     float diff_par = end_par - start_par;
     float speedup = diff_seq/diff_par;
@@ -63,7 +63,7 @@ int main(int argc, char* argv[]){
     printf("Speedup of %d threads is %f \n", thread_count, speedup);
     printf("Efficiency is %f \n", efficiency);
     printf("\n");
-
+*/
     MPI_Finalize();
     return 0;
 }
@@ -73,26 +73,31 @@ void update(){
     int* bottomRow;
     MPI_Status status;
     MPI_Request req_recvAbove, req_recvBelow, req_sendAbove, req_sendBelow;
+    
     //Send and Receive rows to other processes
     if(rank != 0){
+        req_recvAbove =(MPI_Request) malloc((thread_count-1)*sizeof(MPI_Request));
         //Receive bottom row from neighbor above
         printf("Receiving bottom row from rank %d",rank);
-        MPI_Irecv(&bottomRow, DIM, MPI_INT, rank-1, NULL, MPI_COMM_WORLD, &req_recvAbove);
+        MPI_Irecv(bottomRow, DIM, MPI_INT, rank-1, NULL, MPI_COMM_WORLD, &req_recvAbove);
     }
     if(rank != thread_count-1){
+        req_sendBelow = (MPI_Request)malloc((thread_count-1)*sizeof(MPI_Request));
         //Receive top row from neighbor below
-        MPI_Irecv(&topRow, DIM, MPI_INT, rank+1, NULL, MPI_COMM_WORLD, &req_recvBelow);
+        MPI_Irecv(topRow, DIM, MPI_INT, rank+1, NULL, MPI_COMM_WORLD, &req_recvBelow);
     }
 
     if(rank !=0){
+        req_sendAbove = (MPI_Request)malloc((thread_count-1)*sizeof(MPI_Request));
         //Send top row to neighbor above
-        MPI_Isend(currentGen[0], DIM, MPI_INT, rank-1, NULL, MPI_COMM_WORLD, &req_sendAbove);
+        MPI_Isend(&currentGen[0], DIM, MPI_INT, rank-1, NULL, MPI_COMM_WORLD, &req_sendAbove);
     }
 
     if(rank != thread_count-1){
+        req_sendBelow = (MPI_Request)malloc((thread_count-1)*sizeof(MPI_Request));
         //Send bottom row to neighbor below
         printf("Sending bottom row from rank %d: ", rank);
-        MPI_Isend(currentGen[DIM-1], DIM, MPI_INT, rank+1, NULL, MPI_COMM_WORLD, &req_sendBelow);
+        MPI_Isend(&currentGen[rows-1], DIM, MPI_INT, rank+1, NULL, MPI_COMM_WORLD, &req_sendBelow);
     }
     
     //wait for send and receives 
@@ -112,10 +117,25 @@ void update(){
        // send bottom row to neighbor "below"
        MPI_Wait(&req_sendBelow, &status);
    } 
+    int **tempMatrix = new int* [rows+2];
+    for(int titans=0; titans < DIM; titans++){
+        tempMatrix[titans] = new int[DIM];
+    }
+    for(int k =0; k < rows+2; k++){
+        for(int l=0; l < DIM; l++){
+            if(k==0){
+                tempMatrix[k][l] = topRow[l];
+            }else if(k==rows-1){
+                tempMatrix[k][l] = bottomRow[l];
+            }else{
+                tempMatrix[k][l] = currentGen[k-1][l];
+            }
+        }
+    }
 
-    for(int i = 0; i < DIM; i++){
+    for(int i = 0; i < rows; i++){
         for(int j = 0; j < DIM; j++){
-            nextGen[i][j] = rule(neighbors(i,j), currentGen[i][j], i,j);
+            nextGen[i][j] = rule(neighbors(i,j), tempMatrix[i][j], i,j);
         }
     }
   
@@ -146,7 +166,7 @@ int neighbors(int row, int column){
     bottom = row+1;
     if(left < 0) left+= DIM-1;
     if(right == DIM) right=0;
-    if(top < 0) top += DIM-1;
+    if(top < 0) top += rows-1;
     if(bottom == DIM) bottom = 0;
 
     int result =0;
@@ -162,7 +182,7 @@ int neighbors(int row, int column){
 }
 
 void copyGeneration(){
-    for(int j=0; j < DIM; j++){
+    for(int j=0; j < rows; j++){
         for(int k=0; k < DIM; k++){
             nextGen[j][k] = currentGen[j][k];
         }
@@ -171,11 +191,11 @@ void copyGeneration(){
 }
 
 void duplicateGeneration(){
-    nextGen = new int* [DIM];
-    for(int i = 0; i < DIM; i++){
+    nextGen = new int* [rows];
+    for(int i = 0; i < rows; i++){
         nextGen[i] = new int[DIM];
     }
-    for(int j=0; j < DIM; j++){
+    for(int j=0; j < rows; j++){
         for(int k=0; k < DIM; k++){
             nextGen[j][k] = currentGen[j][k];
         }
@@ -190,18 +210,26 @@ void createGeneration(int dimensions){
     
     local = dimensions/thread_count;
     first_row = rank*local;
-    last_row = (rank+1)*local - 1; 
-    currentGen = new int* [dimensions];
-    for(int i=0; i < dimensions; i++)
+    last_row = (rank+1)*local - 1;
+    
+    int local_rows;
+    if(rank==0){
+       local_rows = last_row - first_row +1; 
+    }else{
+        local_rows = last_row -first_row;
+    }
+    currentGen = new int* [local_rows];
+    for(int i=0; i < local_rows; i++)
         currentGen[i] = new int[dimensions];
 
- 
+
     srand(time(NULL));
     //fill partitioned matrix with random 0s and 1s
-    for(int i = first_row; i < last_row; i++){
+    for(int i = 0; i < local_rows; i++){
         for(int k=0; k < dimensions; k++){
             currentGen[i][k] = rand() %2;
         }
+        rows++;
     }
 }
 void printVec(int* a){
