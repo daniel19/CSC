@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <iomanip>
 
+/**
+ *Kernel will update the matrix to keep the heater cells constant.
+ */
 __global__ void copyHeaters(float* stateGrid, float* heaterGrid, int nRows, int nCols) {
    //TODO 
 }
