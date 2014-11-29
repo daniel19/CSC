@@ -3,11 +3,11 @@
 #include <string>
 #include <stdlib.h>
 #include <iomanip>
-
+void  printGrid(float* grid, int rows, int cols);
 /**
  *Kernel will update the matrix to keep the heater cells constant.
  */
-__global__ void copyHeaters(float* stateGrid, float* heaterGrid, int nRows, int nCols) {
+__global__ void copyHeaters(float* stateGrid, float* heaterGrid, int nRows, int nCols, int iteration) {
     for(int i = 0; i < nRows; i++){
         for(int j = 0; j < nCols; j++){
             float heatValue = heaterGrid[i*nCols +j];
@@ -15,6 +15,8 @@ __global__ void copyHeaters(float* stateGrid, float* heaterGrid, int nRows, int 
                 stateGrid[i*nCols + j] =heatValue;
         }
     }
+    printf("\n FOR ITERATION %d \n\n", iteration);
+    printGrid(stateGrid, nRows, nCols);
 }
 
 __global__ void updateGrid(float* inGrid, float* outGrid, float k, int nRows, int nCols) {
@@ -25,8 +27,8 @@ __global__ void updateGrid(float* inGrid, float* outGrid, float k, int nRows, in
            int currentPosition = i*nCols+j;
            Tlft = currentPosition +1;
            Trite = currentPosition -1;
-           Tup = currentPosition +4;
-           Tdown = currentPosition -4;
+           Tup = currentPosition -nCols;
+           Tdown = currentPosition +nCols;
            float Tnew = inGrid[currentPosition];
            float Top, Tbottom, Tleft, Tright;
            Tbottom = (Tdown < 0) ? 0 : inGrid[Tdown];
@@ -38,7 +40,7 @@ __global__ void updateGrid(float* inGrid, float* outGrid, float k, int nRows, in
 
            outGrid[currentPosition] = Tnew;
        }
-   } 
+   }
 }
 
 /*------------------------------------------------------------------------------
@@ -71,13 +73,15 @@ void readHeaterFile(const char* fileName, float* heaterGrid, int rows, int cols)
 /*------------------------------------------------------------------------------
 printGrid
 ------------------------------------------------------------------------------*/
-void printGrid(float* grid, int rows, int cols) {
-    std::cout << std::fixed << std::setprecision(2);
+__device__ void printGrid(float* grid, int rows, int cols) {
+    //std::cout << std::fixed << std::setprecision(2);
     for(int i = 0; i < rows; ++i) {
         for(int j = 0; j < cols; ++j) {
-            std::cout << std::setw(6) << grid[i*cols+j] << " ";
+     //       std::cout << std::setw(6) << grid[i*cols+j] << " ";
+            printf("%f ", grid[i*cols+j]);
         }
-        std::cout << std::endl;
+        //std::cout << std::endl;
+        printf("\n");
     }
 }
 
@@ -123,7 +127,7 @@ int main(int argc, char** argv) {
     float* heaterGrid_d; //device pointer
     //TODO Copy heater grid to device
     cudaMalloc(&heaterGrid_d, gridSize);
-    cudaMemcpy(heaterGrid_d, heaterGrid_h, gridSize, cudaMemcpyDeviceToHost);
+    cudaMemcpy(heaterGrid_d, heaterGrid_h, gridSize, cudaMemcpyHostToDevice);
 
 
     //Input grid
@@ -132,7 +136,7 @@ int main(int argc, char** argv) {
     float* inGrid_d; //device pointer
     //TODO Allocate and copy inGrid to device
     cudaMalloc(&inGrid_d, gridSize);
-    cudaMemcpy(inGrid_d, inGrid_h, gridSize, cudaMemcpyDeviceToHost);
+    cudaMemcpy(inGrid_d, inGrid_h, gridSize, cudaMemcpyHostToDevice);
 
     //Output grid
     float* outGrid_h = (float*)malloc(gridSize);
@@ -140,18 +144,22 @@ int main(int argc, char** argv) {
     float* outGrid_d; //device pointer
     //TODO Allocate and copy outGrid to device
     cudaMalloc(&outGrid_d, gridSize);
-    cudaMemcpy(outGrid_d, outGrid_h, gridSize, cudaMemcpyDeviceToHost);
+    cudaMemcpy(outGrid_d, outGrid_h, gridSize, cudaMemcpyHostToDevice);
 
     //TODO fill in update loop
     for(int i = 0; i < timeSteps; ++i) {
         //copy heater temps to inGrid_d (kernel call)
-        copyHeaters<<<1, 1>>>(inGrid_d, heaterGrid_d, rows, cols);
+        copyHeaters<<<1, 1>>>(inGrid_d, heaterGrid_d, rows, cols, i);
         //update outGrid_d based on inGrid_d (kernel call)
+        updateGrid<<<1, 1>>>(inGrid_d, outGrid_d, k, rows, cols);
         //swap pointers inGrid_d and outGrid_d
+        float* temp = inGrid_d;
+        inGrid_d = outGrid_d;
+        outGrid_d = temp;
     }
     
     //TODO copy inGrid_d back to host (to inGrid_h)
-    cudaMemcpy(inGrid_h, inGrid_d, gridSize, cudaMemcpyHostToDevice); 
+    cudaMemcpy(inGrid_h, inGrid_d, gridSize, cudaMemcpyDeviceToHost); 
     printGridToFile(inGrid_h, rows, cols, "output.txt");
 
     return 0;
