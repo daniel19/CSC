@@ -1,4 +1,3 @@
-CSC-4100
+CSC
 ========
-
-Programming Assignments for Tennessee Technological University class Operating Systems CSC 4100
+Programming Assignments that were assigned from the CSC department at Tennessee Technological University.
