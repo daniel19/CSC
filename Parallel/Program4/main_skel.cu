@@ -8,26 +8,29 @@ void  printGrid(float* grid, int rows, int cols);
  *Kernel will update the matrix to keep the heater cells constant.
  */
 __global__ void copyHeaters(float* stateGrid, float* heaterGrid, int nRows, int nCols, int iteration) {
-    for(int i = 0; i < nRows; i++){
-        for(int j = 0; j < nCols; j++){
+    dim3 gIdx;
+    gIdx.y = blockIdx.y * blockDim.y + threadIdx.y; //row
+    gIdx.x = blockIdx.x * blockDim.x + threadIdx.x; // col
+    int i = gIdx.y;
+    int j = gIdx.x;
+   
+    if(gIdx.x < nCols && gIdx.y < nRows){
             float heatValue = heaterGrid[i*nCols +j];
             if(heatValue != 0)
                 stateGrid[i*nCols + j] =heatValue;
-        }
     }
-    printf("\n FOR ITERATION %d \n\n", iteration);
-    printGrid(stateGrid, nRows, nCols);
 }
 
 __global__ void updateGrid(float* inGrid, float* outGrid, float k, int nRows, int nCols) {
     dim3 gIdx;
-    gIdx.y = blockIdx.y * blockDim.y + threadIdx.y;
-    gIdx.x = blockIdx.x * blockDim.x + threadIdx.x;
+    gIdx.y = blockIdx.y * blockDim.y + threadIdx.y; //row
+    gIdx.x = blockIdx.x * blockDim.x + threadIdx.x; // col
+    int i = gIdx.y;
+    int j = gIdx.x;
 
-   //Find these values from the inGrid
+    //Find these values from the inGrid
     int Tlft, Trite, Tup, Tdown;
-    for(int i=0; i < nRows; ++i){
-       for(int j=0; j < nCols; ++j){
+    if(gIdx.x < nCols && gIdx.y < nRows){
            int currentPosition = i*nCols+j;
            Tlft = currentPosition -1;
            Trite = currentPosition +1;
@@ -35,15 +38,14 @@ __global__ void updateGrid(float* inGrid, float* outGrid, float k, int nRows, in
            Tdown = currentPosition +nCols;
            float Tnew = inGrid[currentPosition];
            float Top, Tbottom, Tleft, Tright;
-           Tbottom = (Tdown < 0) ? 0 : inGrid[Tdown];
-           Top = (Tup > nCols) ? 0 : inGrid[Tup];
-           Tright = (Trite > nCols) ?  0 : inGrid[Trite];
-           Tleft = (Tlft < 0) ? 0 : inGrid[Tlft]; 
+           Tbottom = (Tdown >= nCols*nRows) ? Tnew : inGrid[Tdown];
+           Top = (Tup < 0) ? Tnew : inGrid[Tup];
+           Tright = (Trite >= nCols*nRows) ?  Tnew : inGrid[Trite];
+           Tleft = (Tlft < 0) ? Tnew : inGrid[Tlft]; 
            
            Tnew = Tnew + k*(Top + Tbottom + Tleft + Tright - (4*Tnew));
 
            outGrid[currentPosition] = Tnew;
-       }
    }
 }
 
@@ -160,8 +162,10 @@ int main(int argc, char** argv) {
     for(int i = 0; i < timeSteps; ++i) {
         //copy heater temps to inGrid_d (kernel call)
         copyHeaters<<<gDim, bDim>>>(inGrid_d, heaterGrid_d, rows, cols, i);
+
         //update outGrid_d based on inGrid_d (kernel call)
         updateGrid<<<gDim, bDim>>>(inGrid_d, outGrid_d, k, rows, cols);
+
         //swap pointers inGrid_d and outGrid_d
         float* temp = inGrid_d;
         inGrid_d = outGrid_d;
