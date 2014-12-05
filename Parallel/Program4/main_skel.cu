@@ -20,23 +20,27 @@ __global__ void copyHeaters(float* stateGrid, float* heaterGrid, int nRows, int 
 }
 
 __global__ void updateGrid(float* inGrid, float* outGrid, float k, int nRows, int nCols) {
-    //Find these values from the inGrid
+    dim3 gIdx;
+    gIdx.y = blockIdx.y * blockDim.y + threadIdx.y;
+    gIdx.x = blockIdx.x * blockDim.x + threadIdx.x;
+
+   //Find these values from the inGrid
     int Tlft, Trite, Tup, Tdown;
     for(int i=0; i < nRows; ++i){
        for(int j=0; j < nCols; ++j){
            int currentPosition = i*nCols+j;
-           Tlft = currentPosition +1;
-           Trite = currentPosition -1;
+           Tlft = currentPosition -1;
+           Trite = currentPosition +1;
            Tup = currentPosition -nCols;
            Tdown = currentPosition +nCols;
            float Tnew = inGrid[currentPosition];
            float Top, Tbottom, Tleft, Tright;
            Tbottom = (Tdown < 0) ? 0 : inGrid[Tdown];
            Top = (Tup > nCols) ? 0 : inGrid[Tup];
-           Tright = (Trite < 0) ?  0 : inGrid[Trite];
-           Tleft = (Tlft > nCols) ? 0 : inGrid[Tlft]; 
+           Tright = (Trite > nCols) ?  0 : inGrid[Trite];
+           Tleft = (Tlft < 0) ? 0 : inGrid[Tlft]; 
            
-            Tnew = Tnew + k*(Top + Tbottom + Tleft + Tright - (4*Tnew));
+           Tnew = Tnew + k*(Top + Tbottom + Tleft + Tright - (4*Tnew));
 
            outGrid[currentPosition] = Tnew;
        }
@@ -146,12 +150,18 @@ int main(int argc, char** argv) {
     cudaMalloc(&outGrid_d, gridSize);
     cudaMemcpy(outGrid_d, outGrid_h, gridSize, cudaMemcpyHostToDevice);
 
+    dim3 bDim(16, 16);
+    dim3 gDim;
+    gDim.x = (rows + 16 - 1) / 16; //ceil(num_rows/16)
+    gDim.y = (rows + 16 - 1) / 16;
+
+
     //TODO fill in update loop
     for(int i = 0; i < timeSteps; ++i) {
         //copy heater temps to inGrid_d (kernel call)
-        copyHeaters<<<1, 1>>>(inGrid_d, heaterGrid_d, rows, cols, i);
+        copyHeaters<<<gDim, bDim>>>(inGrid_d, heaterGrid_d, rows, cols, i);
         //update outGrid_d based on inGrid_d (kernel call)
-        updateGrid<<<1, 1>>>(inGrid_d, outGrid_d, k, rows, cols);
+        updateGrid<<<gDim, bDim>>>(inGrid_d, outGrid_d, k, rows, cols);
         //swap pointers inGrid_d and outGrid_d
         float* temp = inGrid_d;
         inGrid_d = outGrid_d;
@@ -160,7 +170,7 @@ int main(int argc, char** argv) {
     
     //TODO copy inGrid_d back to host (to inGrid_h)
     cudaMemcpy(inGrid_h, inGrid_d, gridSize, cudaMemcpyDeviceToHost); 
-    printGridToFile(inGrid_h, rows, cols, "output.txt");
+    printGridToFile(inGrid_h, rows, cols, "output_two.txt");
 
     return 0;
 }
