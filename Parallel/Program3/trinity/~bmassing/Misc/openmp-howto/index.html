@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Using OpenMP on the CS Linux Machines</TITLE>
+<META NAME="description" CONTENT="Using OpenMP on the CS Linux Machines">
+<META NAME="keywords" CONTENT="openmp-howto">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="openmp-howto.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1>Using OpenMP on the CS Linux Machines</H1>
+
+<P>
+The versions of the GNU compilers installed on the classroom/lab machines
+include support for the OpenMP extensions,
+so you should be able to compile and run OpenMP programs on any of them.
+Whether multithreading helps performance will depend on the
+program and the hardware configuration. 
+You can find out information about processors by looking at
+the pseudofile <TT>/proc/cpuinfo</TT> (looks like a text file).
+
+<P>
+
+<H2><A NAME="SECTION00001000000000000000">
+Compiling OpenMP programs</A>
+</H2>
+
+<P>
+Use the command <TT>gcc</TT> (<TT>g++</TT> for C++) with the <TT>-fopenmp</TT> flag
+to compile C programs with OpenMP extensions.
+Simple usage:
+<P>
+<BLOCKQUOTE><TT>gcc -fopenmp -o foo foo.c</TT>
+</BLOCKQUOTE>
+<P>
+<P>
+See <A NAME="tex2html2"
+  HREF="../../Misc/gcc-howto/index.html">my notes on the GNU compilers</A>
+for notes on using the GNU compilers.
+
+<P>
+
+<H2><A NAME="SECTION00002000000000000000">
+Running OpenMP programs</A>
+</H2>
+
+<P>
+To execute the compiled program, just type the name of the
+executable.  By default, the number of threads is set to the
+number of processors (with hyperthreaded processors counting as two each).
+You can override this by setting the
+environment variable <TT>OMP_NUM_THREADS</TT>.
+With some compilers,
+using <TT>schedule(runtime)</TT> in your program will result in
+the runtime environment picking what it thinks is the best schedule.  
+How well this works may depend on the compiler;
+it may be useful to experiment with 
+specifying the type of thread scheduling in your program
+or using <TT>schedule(runtime)</TT> and setting the environment variable
+<TT>OMP_SCHEDULE</TT>.
+Example usages:
+<P>
+<BLOCKQUOTE><TT>foo</TT>
+</BLOCKQUOTE>
+<P>
+<BLOCKQUOTE><TT>foo arg1 arg2</TT>
+</BLOCKQUOTE>
+<P>
+<BLOCKQUOTE><TT>OMP_NUM_THREADS=10 foo</TT>
+</BLOCKQUOTE>
+<P>
+<BLOCKQUOTE><TT>OMP_SCHEDULE=static OMP_NUM_THREADS=10 foo</TT>
+</BLOCKQUOTE>
+<P>
+<P>
+
+<H2><A NAME="SECTION00003000000000000000">
+Useful links</A>
+</H2>
+
+<P>
+
+<UL>
+<LI><A NAME="tex2html3"
+  HREF="http://www.openmp.org">OpenMP home page</A>, 
+	with links to the OpenMP
+	standard and notes on implementations, examples, etc.
+
+<P>
+</LI>
+</UL>
+
+<P>
+<BR> <HR>
+<ADDRESS>
+<I>Berna Massingill <BR>
+2014-08-11</I>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -95,9 +95,13 @@ void* parallel_update(void* rank){
         //Add barrier wait for sync
         pthread_barrier_wait(&barrier);
         //swap pointers after each generation finishes
-        int temp = **currentGen;
-        **currentGen = **nextGen;
-        **nextGen = temp;
+        if( myrank == 0){
+            for(int i = 0; i < DIM; i++){
+                for(int j=0; j< DIM; j++){
+                    currentGen[i][j] = nextGen[i][j];
+                }
+            } 
+        }
    } 
     return NULL;
 }

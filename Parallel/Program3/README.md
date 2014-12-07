@@ -10,4 +10,4 @@ Compile the omp program usin the following command:
    
 To run and compile MPI use the following commands:
     mpicc -g -Wall -o mpiGOL GOL_MPI.cpp 
-    mpiexec -n [number of process] ./mipGOL 
+    mpirun -np [number of process] -machinefile fullpath ./mipGOL [matrix dimension]

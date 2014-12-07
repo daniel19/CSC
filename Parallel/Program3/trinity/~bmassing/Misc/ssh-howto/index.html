@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>SSH Without Prompts on the CS Linux Machines</TITLE>
+<META NAME="description" CONTENT="SSH Without Prompts on the CS Linux Machines">
+<META NAME="keywords" CONTENT="ssh-howto">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="ssh-howto.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1>SSH Without Prompts on the CS Linux Machines</H1>
+
+<P>
+
+<H2><A NAME="SECTION00001000000000000000">
+Introduction</A>
+</H2>
+
+<P>
+This document briefly discusses setting things up so you can use
+<TT>ssh</TT> to remotely log in to the department's Linux machines
+without being prompted for a password.  (Once you do this, you will
+also be able to use other SSH-based commands, such as <TT>scp</TT>,
+without being prompted.)  It is not meant as a complete discussion
+of the various SSH authentication options!
+
+<P>
+
+<H2><A NAME="SECTION00002000000000000000">
+Initial Setup</A>
+</H2>
+
+<P>
+Generate a key for SSH with the following command:
+<P>
+<BLOCKQUOTE><TT>ssh-keygen -t dsa</TT>
+</BLOCKQUOTE>
+<P>
+This command will prompt you for a filename and a ``passphrase''.
+You can just accept the default choice for the filename.
+The passphrase is one you will have to supply to use the key;
+this provides some extra security but also means you have to 
+take additional steps to avoid being prompted for the passphrase
+rather than your password.  A blank passphrase is probably adequate
+if you just want to use the key for logging in from one of the
+department machines to another.  Some options if you want the
+additional security of a non-blank passphrase are discussed below.
+
+<P>
+Once you've run the command, you should have files 
+<TT>$HOME/.ssh/id_dsa</TT> and
+<TT>$HOME/.ssh/id_dsa.pub</TT>.
+Add the new key 
+to the list of authorized keys
+by editing file <TT>$HOME/.ssh/authorized_keys2</TT> and
+inserting the text from <TT>$HOME/.ssh/id_dsa.pub</TT>
+(as a separate line).
+
+<P>
+Also verify that file/directory permissions are set 
+appropriately:
+The <TT>.ssh</TT> directory and its contents should be
+accessible only to you (<TT>chmod -R go= ~/.ssh</TT>),
+and your home directory should <I>not</I> be group-writable
+(<TT>chmod g-w ~</TT>).
+
+<P>
+
+<H2><A NAME="SECTION00003000000000000000">
+Testing and Troubleshooting</A>
+</H2>
+
+<P>
+Check that everything is set up properly by using
+<TT>ssh</TT> to execute a simple command on another machine, e.g.,
+<P>
+<BLOCKQUOTE><TT>ssh diasw01 hostname</TT>
+</BLOCKQUOTE>
+<P>
+If everything is set up properly, the command will execute
+and you will not be prompted for a password.  
+The first time you try this test for each machine, you'll get
+some messages ending with a prompt ``are you sure'' etc.
+Answer ``yes'', and the next time you should not be prompted,
+unless/until something on the target machine changes in a way
+that affects keys.  If that happens, just answer ``yes'' again.
+If instead of the prompt you get error messages about authentication
+failure, try editing file <TT>.ssh/known_hosts</TT> and removing
+any lines containing the target machine name.
+
+<P>
+If you get a password prompt, check file/directory
+permissions as described above.
+
+<P>
+
+<H2><A NAME="SECTION00004000000000000000">
+Using a Non-Blank Passphrase</A>
+</H2>
+
+<P>
+Having a non-blank passphrase would seem to defeat the purpose
+of all of this setup, since it appears to just replace the prompt
+for a password with a prompt for a passphrase.  
+However, you can set things up so that authentication is done by
+a background process (an ``agent''), in which case you will only
+be prompted when you start the agent.
+<I>More information to be added sometime.</I>
+
+<P>
+<BR> <HR>
+<ADDRESS>
+<I>Berna Massingill <BR>
+2013-09-16</I>
+</ADDRESS>
+</BODY>
+</HTML>
