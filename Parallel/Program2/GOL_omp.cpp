@@ -77,9 +77,14 @@ void update(){
             #pragma omp barrier
             #pragma omp single
             {
-            int temp = **currentGen;
-            **currentGen = **nextGen;
-            **nextGen = temp;  
+                /*int temp = **currentGen;
+                **currentGen = **nextGen;
+                **nextGen = temp;*/
+                for(int i =0; i < DIM; i++){
+                  for(int j = 0; j < DIM; j++){
+                    currentGen[i][j] = nextGen[i][j];
+                  }
+                }  
             }  
     	}
    }
@@ -87,19 +92,6 @@ void update(){
 
 int rule(int numberOfLiveNeighbors, int cellState, int row, int column){
     //Check for the correct response to the number of neighbors and current state of cell
- // printf("Rule at (%d, %d) : numberOfLiveNeighbors: %d , cellState: %d \n",row, column,numberOfLiveNeighbors, cellState);
-  /*  if(numberOfLiveNeighbors > 2 && cellState ==1){
-        return 0;
-    }else if((numberOfLiveNeighbors == 2 || numberOfLiveNeighbors == 3) && cellState ==1){
-        return 1;
-    }else if(numberOfLiveNeighbors > 3 && cellState ==1){
-        return 0;
-    }else if(numberOfLiveNeighbors ==3 && cellState ==0){
-        return 1;
-    }else{
-        return 0;
-    }*/
-
     switch(numberOfLiveNeighbors){
         case 3:
             if(cellState ==1)

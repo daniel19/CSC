@@ -1,0 +1,280 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Quotas on the CS Linux Machines: FAQ</TITLE>
+<META NAME="description" CONTENT="Quotas on the CS Linux Machines: FAQ">
+<META NAME="keywords" CONTENT="quotas-faq">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="quotas-faq.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1>Quotas on the CS Linux Machines:  FAQ</H1>
+
+<P>
+Questions that are frequently asked, or maybe should be, 
+about quotas as implemented on the CS classroom/lab Linux machines.
+
+<P>
+
+<OL>
+<LI><I>What are quotas anyway?</I>
+
+<P>
+They're a mechanism provided by Linux (and other UNIX-like) filesystems
+for limiting total size of each user's files.  
+(Why bother?  See below.) Every time you create a new file, or make an existing file bigger,
+the system is supposed to check to make sure total space doesn't exceed
+whatever limit was set for your account.
+If it does, you're ``over quota'', and you have a grace period of about
+a week to do something about it -- either delete some files or ask for
+a larger quota.
+
+<P>
+</LI>
+<LI><I>I keep getting this e-mail message about disk space usage
+    on my account exceeding my quota.  
+    What does it mean and how do I make it stop?</I>
+
+<P>
+It means what it says -- you're over quota -- and you make it stop by
+doing something about the situation (either removing some files or asking
+for a larger quota).
+
+<P>
+In a bit more detail:
+We have things set up so that once a week the system checks all user quotas
+and sends warning messages to users who are over quota.
+Our thinking is that users who go over quota will therefore find out about
+it before the end of grace period and be able to take appropriate action
+before the system's enforcement mechanism kicks in.
+Copies of the messages also go to one of the sysadmins,
+who has been known to take action and/or send follow-up messages.
+The messages' ``reply-to'' address is set to send to her as well.
+
+<P>
+</LI>
+<LI><I>What happens if I go over quota and do nothing?</I>
+
+<P>
+Maybe nothing; if nothing you do with your account runs up against the
+system's quota enforcement mechanism,
+everything may seem fine
+(except of course that those warning messages keep going out).
+But if you do anything that does run up against the enforcement mechanism,
+odds are you'll notice:
+Ill effects can range from sluggish logins/logouts to 
+losing work when you open a file in a text editor and try to save it.
+(``The computer ate my homework!'')
+``Are you over quota?'' is one of first questions in troubleshooting
+otherwise mysterious problems with students' accounts.
+
+<P>
+</LI>
+<LI><I>How can I be over quota?  All I have is a few files for my classes!</I>
+
+<P>
+You might be surprised how much space some applications use
+for hidden files (ones whose path names start with a ``.'').
+Browsers cache previously-fetched pages, 
+GUI applications store configuration
+and history information, etc., etc.
+
+<P>
+</LI>
+<LI><I>How do I find out what's taking up so much space?</I>
+
+<P>
+Some command-line tools that may be helpful:
+
+<P>
+
+<UL>
+<LI><TT>quota</TT> reports current space user versus quota.  (On our
+systems it will also produce an error message about not being able to
+connect to <TT>pandora01</TT>, which can be ignored.)  The important
+numbers here are the ones for ``quota'' (self-explanatory) and
+``blocks'' (current usage, which you want to be the smaller of
+the two).
+
+<P>
+</LI>
+<LI>The Linux command most useful for finding out what's taking up
+space is <TT>du</TT>, which summarizes disk usage
+for files or directories.  (<TT>ls -l</TT> shows space usage for 
+individual files but is less useful for directories.)  
+We install on our systems a locally-written script 
+called <TT>sorted-disk-usage</TT> that uses it
+to show, for a given directory, all the files and subdirectories
+(including hidden ones) sorted from smallest to largest.
+from smallest to largest.  So you can start with
+
+<P>
+<BLOCKQUOTE>
+<TT>sorted-disk-usage ~</TT>
+
+</BLOCKQUOTE>
+
+<P>
+(<TT>~</TT> is your home directory)
+and then repeat with names of subdirectories to ``drill down''.
+
+<P>
+Complete text of this script appears at the end of this document,
+so you can duplicate or adapt it for other systems.
+Or you may find other ways of accomplishing the same thing.
+
+<P>
+</LI>
+</UL>
+
+<P>
+Some typical space hogs:
+
+<P>
+
+<UL>
+<LI><TT>.local</TT> is where the graphical file manager keeps its
+	trash/recycle bin (among other things).
+
+<P>
+</LI>
+<LI><TT>.mozilla</TT> is where Firefox keeps its cache (among other things).
+
+<P>
+</LI>
+<LI><TT>.cache</TT> is where Chrome keeps its cache (among other things).
+
+<P>
+</LI>
+</UL>
+
+<P>
+</LI>
+<LI><I>Okay, I know what's taking up space.  Now what?</I>
+
+<P>
+If it's a hidden directory associated with a GUI application,
+it's probably safer to remove files using the application itself:
+
+<P>
+
+<UL>
+<LI>If you delete files by dragging them to the trash/recycle bin, 
+	empty it.
+
+<P>
+</LI>
+<LI>If you use Firefox, clear its cache.
+    How to do this seems to change from release to release.
+    For the version installed as of this writing (10.0), it's under 
+    <TT>Edit -&gt; Preferences -&gt; 
+    Advanced -&gt; Network</TT>.
+    (You can also set a maximum size for the cache here.  Helpful!)
+
+<P>
+</LI>
+<LI>If you use Chrome, clear its cache.
+    For the version installed as of this writing, first you click the little
+    wrench symbol, and then select 
+    <TT>Tools -&gt; Clear Browsing Data</TT>.
+
+<P>
+</LI>
+</UL>
+
+<P>
+Otherwise you can use either the graphical file manager or command-line
+tools to remove unneeded files: 
+
+<P>
+
+<UL>
+<LI>If you use the graphical file manager, remember to also empty its 
+    trash/recycle bin.
+
+<P>
+</LI>
+<LI>If you work from the command line, remember that <TT>rm</TT> actually
+    deletes files (rather than moving them to a recycle bin),
+    so use it with caution, especially with wildcards.  
+    <TT>rm -r</TT> removes a whole directory and its contents
+    (so be careful!).
+    The <TT>-i</TT> flag makes <TT>rm</TT> ``interactive'' (i.e., you get
+    a prompt for each file to be removed -- safer but tedious).
+
+<P>
+</LI>
+</UL>
+
+<P>
+If you do the above and are still over quota, talk to someone in the
+department (course instructor, research supervisor, one of the admins)
+about an increase in quota.
+Reasonable requests for a larger quota are usually honored.
+
+<P>
+</LI>
+<LI><I>Why do you impose quotas anyway?  Disk space is cheap!</I>
+
+<P>
+Yes, it is, and ITS has been generous in providing us with a lot
+of it.  But it's a shared resource, and you've probably all noticed
+that today's ``more than anyone could ever use!'' is tomorrow's
+``barely enough'', and if we take no steps to limit anyone's use
+of this shared resource, the result is that it fills up and no one
+can get much done.
+
+<P>
+</LI>
+</OL>
+
+<P>
+Complete text of the <TT>sorted-disk-usage</TT> script:
+
+<P><PRE>
+#!/bin/sh
+#
+# show disk usage of directory and all files/subdirectories, sorted 
+# by size in ascending order.  
+#
+# usage:  sorted-disk-usage directory
+#
+if [ -z "$1" ]
+then
+	echo usage is `basename $0` directory
+	exit 1
+fi
+
+find "$1" -mindepth 1 -maxdepth 1 -exec du -sk {} \; | sort -n
+
+echo ""
+echo "total:"
+du -sk "$1"
+</PRE>
+
+<P>
+<BR> <HR>
+<ADDRESS>
+<I>Berna Massingill <BR>
+2013-08-31</I>
+</ADDRESS>
+</BODY>
+</HTML>

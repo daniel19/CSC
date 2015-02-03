@@ -1,0 +1,3 @@
+It took 6.35285 seconds to compute 100 generations with 10 Processes
+It took 6.81465 seconds overall
+

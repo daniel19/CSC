@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Java From the Command Line</TITLE>
+<META NAME="description" CONTENT="Java From the Command Line">
+<META NAME="keywords" CONTENT="java-cmdline-howto">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="java-cmdline-howto.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1>Java From the Command Line</H1>
+
+<P>
+
+<H2><A NAME="SECTION00001000000000000000">
+Overview</A>
+</H2>
+
+<P>
+In several of our courses we encourage students to develop programs
+with an IDE (Eclipse or Visual Studio)
+because IDEs have many built-in features that make it easier
+to work with large programs.
+Eclipse in particular provides good support for Java,
+so it is reasonable enough to use it to develop Java programs.
+But it is perfectly possible to write, compile, and run
+Java programs with any text editor and the command-line tools that
+come with typical Java implementations, and sometimes it can make
+sense to do so, 
+or to use a combination of an IDE and command-line tools.
+This document describes how to do this under Linux.
+
+<P>
+Situations in which you might find this useful include writing
+short throwaway programs, maklng very small changes to programs of
+any size, and running programs with command-line arguments or
+environment variables that should vary from execution to execution.
+You might even adopt a hybrid development strategy, developing the
+programs with an IDE and then running them from the command line
+(by opening a separate terminal window and navigating to the 
+appropriate part of the IDE's workspace directory).
+
+<P>
+
+<H2><A NAME="SECTION00002000000000000000">
+Writing Java programs</A>
+</H2>
+
+<P>
+You can write Java programs with any text editor
+(program that lets you edit standard ASCII text files).  
+Among UNIX enthusiasts, whose editor is
+better is a subject of perennial debate.  
+Two popular and powerful (if not exactly novice-friendly) groups
+of editors are 
+
+<UL>
+<LI><code>vi</code> and its clones/successors.  On Linux systems, the 
+	command <code>vi</code> actually invokes <code>vim</code> (``VI iMproved''),
+	one such successor.  There is also a graphically-oriented
+	variant <code>gvim</code>, worth trying if you like GUIs.
+	The command <code>vimtutor</code> brings up a tutorial;
+	half an hour with this tutorial will likely make using
+	<code>vi</code> a more pleasant experience.
+
+<P>
+</LI>
+<LI><code>emacs</code>, which when started in graphical mode presents
+	a graphical interface and a text-only interface otherwise
+	(or when started with <code>-nw</code>).
+	Once in <code>emacs</code>, pressing <code>control-h</code> and then
+	<code>t</code> brings up a tutorial, which again is worth spending
+	half an hour with.
+</LI>
+</UL>
+
+<P>
+
+<H2><A NAME="SECTION00003000000000000000">
+Compiling Java programs</A>
+</H2>
+
+<P>
+A Java compiler is installed on the department Linux machines as
+<code>/usr/java/latest/bin/javac</code>.
+(If everything is set up correctly in your account,
+this should be the same as just <code>javac</code>.  
+Confirm this with <code>which javac</code>.)
+So you could compile, for example, program
+<code>Hello.java</code> by typing the following command.
+<BLOCKQUOTE>
+<code>javac Hello.java</code>
+
+</BLOCKQUOTE>
+This assumes that all the classes needed by <code>Hello.java</code> 
+are either part of the standard Java libraries or in the current
+directory.
+If some of the classes referenced in <code>Hello.java</code> are in
+a JAR file, say <code>MyLib.jar</code>, you would need to type
+<BLOCKQUOTE>
+<code>javac -classpath .:MyLib.jar Hello.java</code>
+
+</BLOCKQUOTE>
+By default the <code>.class</code> files are created in the current
+directory, but you can use the <code>-d</code> option to specify a different
+location, e.g.
+<BLOCKQUOTE>
+<code>javac -d obj -classpath Hello.java</code>
+</BLOCKQUOTE>to put them in <code>obj</code>.
+
+<P>
+If you want to compile many files, especially if they are contained in
+multiple directories, as is typically the case when using packages,
+you could type something such as the following, which finds all <code>.java</code>
+files in <code>pkg</code> and compiles them, placing the results in <code>obj</code>.
+<BLOCKQUOTE>
+<code>javac -d obj `find pkg -name "*.java"`</code>
+</BLOCKQUOTE>(Notice that <code>`</code> is the backquote character near the top left corner
+of most keyboards and not the single-quote character.)
+
+<P>
+
+<H2><A NAME="SECTION00004000000000000000">
+Running Java programs</A>
+</H2>
+
+<P>
+Unlike programs written in C++ and many other languages, Java programs
+do not compile to code that can be executed directly.  
+Instead they compile to ``byte code'' (<code>.class</code> files) meant to
+be executed by a Java virtual machine.  A JVM is installed on
+the department Linux machines as
+<code>/usr/java/latest/bin/java</code>
+(which again should be the same as just <code>java</code> if everything
+is set up right). 
+So if you want to run the <code>main</code> method in class
+<code>Hello</code>, you would type the following command.
+<BLOCKQUOTE>
+<code>java Hello</code>
+</BLOCKQUOTE>To pass command-line arguments to <code>main</code> in <code>Hello</code>,
+type them at the end of the above command separated by spaces.  
+Notice that arguments that
+contain spaces or other characters that mean something to your
+shell (e.g., the wildcard character ``*'') need to be enclosed in
+double or single codeDisplay.
+Again, the above command assumes
+that all the classes needed by <code>Hello.java</code> 
+are either part of the standard Java libraries or in the current
+directory.
+If some of the classes referenced in <code>Hello.java</code> are in
+a JAR file, say <code>MyLib.jar</code>, you would need to type
+<BLOCKQUOTE>
+<code>java -classpath .:MyLib.jar Hello</code>
+</BLOCKQUOTE>You can abbreviate <code>-classpath</code> as <code>-cp</code>.
+If the classes are not in the current directory, 
+you would need to type something such as the following (if the classes are
+in directory <code>obj</code>)
+<BLOCKQUOTE>
+<code>java -classpath obj Hello</code>
+</BLOCKQUOTE>If the class whose <code>main</code> method you want to run is part of
+a package,
+you would need to type something such as the following,
+which runs <code>Hello</code> in package <code>pkg</code>
+<BLOCKQUOTE>
+<code>java -classpath obj pkg.Hello</code>
+</BLOCKQUOTE>Notice that this assumes that <code>Hello.class</code> is in <code>obj/pkg</code>,
+as described briefly in the next section.
+
+<P>
+
+<H2><A NAME="SECTION00005000000000000000">
+Java packages versus directories/folders</A>
+</H2>
+
+<P>
+Java normally expects source code for package <code>x.y.z</code> to be
+stored in a directory (folder) <code>x/y/z</code>. 
+Eclipse automatically creates an appropriate directory structure
+when you create a package; if you're working from the command
+line, you should do it yourself (e.g., with <code>mkdir</code>). 
+
+<P>
+<BR> <HR>
+<ADDRESS>
+<I>Berna Massingill <BR>
+2014-08-11</I>
+</ADDRESS>
+</BODY>
+</HTML>

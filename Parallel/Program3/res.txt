@@ -1,0 +1,32 @@
+For 10 threads and square matrix 40000
+Total Time process 503.167
+Total Run Time 599.477 
+
+For square matrix size: 20000 with thread count: 2
+Total Time to process: 614.305
+Total Time to run: 634.654
+
+For square matrix size: 20000 with thread count: 8
+Total Time to process: 158.022
+Total Time to run: 183.427
+
+For square matrix size: 40000 with thread count: 4
+Total Time to process: 1212.3
+Total Time to run: 1316.13
+
+For square matrix size: 40000 with thread count: 8
+Total Time to process: 613.547
+Total Time to run: 714.742
+
+For square matrix size: 40000 with thread count: 12
+Total Time to process: 419.504
+Total Time to run: 521.414
+
+For square matrix size: 40000 with thread count: 16
+Total Time to process: 314.192
+Total Time to run: 415.189
+
+For square matrix size: 10000 with thread count: 2
+Total Time to process: 150.945
+Total Time to run: 156.178
+

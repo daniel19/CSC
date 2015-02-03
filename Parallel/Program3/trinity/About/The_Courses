@@ -1,0 +1,204 @@
+<!-- HTML Generated Dynamically by J-Web 0.02 -->
+<html>
+<head><title>The Computer Science Department</title>
+<!-- <base target="_blank"> -->
+</head>
+<body bgcolor="FFFFFF" text="#000000" link="#990000" vlink="#F1650E" alink="#8504F6" background=/IMAGES/pattern1.jpg>
+<!--
+<br><p><img src="/IMAGES/cs-bar2.gif" align=bottom alt="Trinity University Computer Science"></p><br>
+<br><p><center><img src="/Pictures/TU_FS_CT_WEB.gif" align=bottom alt="Trinity University Computer Science"></p><h1>Computer Science</h1></center><br>
+-->
+<br><p><table><td><a href=http://www.trinity.edu><img src="/Pictures/TU_L_K.gif" align=bottom alt="Trinity University"
+border=none></a></td><td><a href=http://www.cs.trinity.edu><img src=/Pictures/cs.gif alt="Trinity University Computer Science" border=none></a></td></table>
+<table>
+<tr>
+<td align=center width=5%><img align=top src="/IMAGES/courses.vert.gif" hspace=0>
+</td>
+<td align=left width=35%>
+<font size="3">
+
+<font color="#000000">
+<h2>Computer Science Curriculum</h2>
+<menu>
+Frequently Asked Questions [
+<a href="http://www.cs.trinity.edu/~jhowland/dept-faq/dept-faq/"> HTML </a> ] [
+<a href="http://www.cs.trinity.edu/~jhowland/dept-faq/dept-faq.ps"> PS </a> ] [
+<a href="http://www.cs.trinity.edu/~jhowland/dept-faq/dept-faq.pdf"> PDF </a> ]<br>
+CS Curriculum (1997-1998 and later) [
+<a href="http://www.cs.trinity.edu/~jhowland/dept-faq/catalog-copy/"> HTML </a> ] [
+<a href="http://www.cs.trinity.edu/~jhowland/dept-faq/catalog-copy.ps"> PS </a> ] [
+<a href="http://www.cs.trinity.edu/~jhowland/dept-faq/catalog-copy.pdf"> PDF </a> ]<br>
+CS Curriculum (1996-1997 and earlier) [
+<a href="catalog/catalog_ToC.html"> HTML </a> ] <br>
+<!--Cognitive Science Minor [
+<a href="http://www.cs.trinity.edu/Cognitive_Science/"> HTML </a> ] <br> -->
+CS Major Course Schedule (prior to 2010-2011 catelog) [
+<!--
+<a href="http://www.cs.trinity.edu/~jhowland/dept-faq/dept-faq/node67.html#SECTION000280000000000000000"> HTML </a> ] [
+-->
+<a href="http://www.cs.trinity.edu/~jhowland/dept-faq/schedule.ps"> PS </a> ] [
+<a href="http://www.cs.trinity.edu/~jhowland/dept-faq/schedule.pdf"> PDF </a> ]<br>
+CS Major Course Schedule (2010-2011 and later catelog) [
+<!--
+<a href="http://www.cs.trinity.edu/~jhowland/dept-faq/dept-faq/node67.html#SECTION000280000000000000000"> HTML </a> ] [
+-->
+<a href="http://www.cs.trinity.edu/~jhowland/dept-faq/PathsThruBS.pdf"> PDF </a> ]<br>
+<a href="http://www.trinity.edu/departments/business_admin/cframe.htm">Trinity Common Curriculum</a><br>
+<a href="http://www.trinity.edu/org/tlc/syllabi.html">Online Syllabi for Other Trinity Courses</a><br>
+</menu>
+<h2>Course Notes</h2>
+<menu>
+<a name=cs1120>
+<a href="http://www.cs.trinity.edu/~bmassing/CS1120/">
+CS1120 Low-Level Computing</a>
+(<a href=http://www.cs.trinity.edu/~bmassing>Massingill</a>)<br><br>
+<a href="http://www.cs.trinity.edu/~thicks/1194/">CS1194 Survey of Computer Science</a> (<a href=http://www.cs.trinity.edu/~thicks>Hicks</a>)<br>
+<br>
+<a href="http://www.cs.trinity.edu/~thicks/1300/">CS1300 Essential Computer Skills</a> (<a href=http://www.cs.trinity.edu/~thicks>Hicks</a>)<br>
+<a href="http://www.cs.trinity.edu/~psemmes/cs1300/">CS1300 Essential Computer Skills</a>
+ (<a href=http://www.cs.trinity.edu/~psemmes>Semmes</a>)<br>
+<a href="http://www.cs.trinity.edu/~rjungman/cs1300/">CS1303 Essential Computer Skills in Education</a>
+ (<a href=http://www.cs.trinity.edu/~rjungman>Jungman</a>)<br>
+<a href="http://www.cs.trinity.edu/~jbelisle/cs1300/">CS1300 Essential Computer Skills</a> (<a href=http://www.cs.trinity.edu/~jbelisle>Belisle</a>)<br>
+<a href="http://www.cs.trinity.edu/~cmccollu/cs1300/">CS1300 Essential Computer Skills</a> (<a href=http://www.cs.trinity.edu/~cmccollu>McCollum</a>)<br>
+<a href="http://www.trinity.edu/cbrown/skills/">CS1300 Essential Computer Skills</a> (<a href=http://www.trinity.edu/cbrown>Brown</a>)<br>
+<br>
+<a name=cs1301>
+<a href="cs301">CS1301 Great Ideas in Computer Science</a> (<a href=http://www.cs.trinity.edu/~jhowland>Howland</a>)<br>
+<a name=cs1101l>
+<a href="cs101l">CS1101L Laboratory for Great Ideas in Computer Science</a> (<a href=http://www.cs.trinity.edu/~jhowland>Howland</a>)<br>
+<br>
+<a href="http://www.cs.trinity.edu/~thicks/1302">CS1302 Introduction to Computing: Business Applications</a> (<a href=http://www.cs.trinity.edu/~thicks>Hicks</a>)<br>
+<br>
+<a href="http://www.cs.trinity.edu/~thicks/1304">CS1304 Computers and Society</a> (<a href=http://www.cs.trinity.edu/~thicks>Hicks</a>)<br>
+<br>
+<a name=cs1304>
+<a href="cs307">CS1304 Computers and Society</a> (<a href=http://www.cs.trinity.edu/~jhowland>Howland</a>)<br>
+<a href="cs1311">CS1311-1 Introduction to Programming Logic</a> (<a href=http://www.cs.trinity.edu/~jhowland>Howland</a>)<br>
+<a href="cs1311">CS1311-2 Introduction to Programming Logic</a> (<a href=http://www.cs.trinity.edu/~jhowland>Howland</a>)<br>
+<br>
+<a href="http://www.cs.trinity.edu/~meggen/Classes/1320/">CS1320 Principles of Algorithm Design I</a> (<a href=http://www.cs.trinity.edu/~meggen>Eggen</a>)<br>
+<a href="http://www.cs.trinity.edu/~bmassing/CS1320/">CS1320 Principles of Algorithm Design I</a> (<a href=http://www.cs.trinity.edu/~bmassing>Massingill</a>)<br>
+<a href="http://www.cs.trinity.edu/~joldham0/1320/">CS1320 Principles of Algorithm Design I</a> (<a href=http://www.cs.trinity.edu/~joldham0>Oldham</a>)<br>
+<a href="http://www.cs.trinity.edu/~thicks/1320/">CS1320 Principles of Algorithm Design I</a> (<a href=http://www.cs.trinity.edu/~thicks>Hicks</a>)<br>
+<br>
+<a href="http://www.cs.trinity.edu/~joldham0/1321/">CS1321 Principles of Algorithm Design II</a> (<a href=http://www.cs.trinity.edu/~joldham0>Oldham</a>)<br>
+<a href="http://www.cs.trinity.edu/~bmassing/CS1321/">
+        CS1321 Principles of Algorithm Design II</a>
+        (<a href=http://www.cs.trinity.edu/~bmassing>Massingill</a>)<br>
+<a href="http://www.cs.trinity.edu/~thicks/1321/">CS1321 Principles of Algorithm Design II</a> (<a href=http://www.cs.trinity.edu/~thicks>Hicks</a>)<br>
+<a href="http://www.cs.trinity.edu/~mlewis/CSCI1321-S02/">CS1321 Principles of Algorithm Design II</a> (<a href=http://www.cs.trinity.edu/~mlewis>Lewis</a>)<br>
+<br>
+<a href="http://www.cs.trinity.edu/~meggen/Classes/1323/">CS1323 Discrete Structures</a> (<a href=http://www.cs.trinity.edu/~meggen>Eggen</a>)<br>
+ <a href="http://www.cs.trinity.edu/~bmassing/CS1323/">
+ CS1323 Discrete Structures</a>
+(<a href=http://www.cs.trinity.edu/~bmassing>Massingill</a>)<br>
+ <a href="http://www.cs.trinity.edu/~bbateman/cs1323/">
+ CS1323 Discrete Structures</a>
+(<a href=http://www.cs.trinity.edu/~bbateman>Bateman</a>)<br>
+<br>
+<a href="http://www.cs.trinity.edu/~meggen/Classes/2320">CS2320 Principles of Data Abstraction</a> (<a href=http://www.cs.trinity.edu/~meggen>Eggen</a>)<br>
+<a href="http://www.cs.trinity.edu/~thicks/2320">CS2320 Principles of Data Abstraction</a> (<a href=http://www.cs.trinity.edu/~thicks>Hicks</a>)<br>
+<br>
+<a name=cs2321>
+<a href="cs2321">CS2321 Principles of Computer Design</a> (<a href=http://www.cs.trinity.edu/~jhowland>Howland</a>)<br>
+<a href="http://www.cs.trinity.edu/~meggen/Classes/2321/">CS2321 Principles of Computer Design</a> (<a href=http://www.cs.trinity.edu/~meggen>Eggen</a>)<br>
+<a href="http://www.cs.trinity.edu/~bmassing/CS2321/">
+CS2321 Principles of Computer Design</a>
+(<a href=http://www.cs.trinity.edu/~bmassing>Massingill</a>)<br>
+<br>
+<a name=cs2322>
+<a href="http://www.cs.trinity.edu/~bbateman/cs2322/">CS2322 Principles of Functional Languages</a> (<a href=http://www.cs.trinity.edu/~bbateman>Bateman</a>)<br>
+CS2322 Principles of Functional Languages [
+<a href=cs2322>J</a> ] [ <a href="cs316">Scheme</a> ] (<a href=http://www.cs.trinity.edu/~jhowland>Howland</a>)<br>
+<a href="http://www.cs.trinity.edu/~meggen/Classes/2322">CS2322 Principles of Functional Languages</a> (<a href=http://www.cs.trinity.edu/~meggen>Eggen</a>)<br>
+<br>
+<a href="http://www.cs.trinity.edu/~akonstam/cs3342">CS3342 Computer Networks</a> (<a href=http://www.cs.trinity.edu/~akonstam>Konstam</a>)<br>
+<a name=cs3342>
+<a href="cs342">CS3342 Computer Networks</a> (<a href=http://www.cs.trinity.edu/~jhowland>Howland</a>)<br>
+<a href="http://www.cs.trinity.edu/~thicks/3342/">CS3342 Computer Networks</a> (<a href=http://www.cs.trinity.edu/~thicks>Hicks</a>)<br>
+<br>
+<a href="http://www.cs.trinity.edu/~thicks/346">CS3343 Database Systems</a> (<a href=http://www.cs.trinity.edu/~thicks>Hicks</a>)<br>
+<br>
+<a href="http://www.cs.trinity.edu/~joldham0/3352/">CS3352 Simulation Theory</a> (<a href=http://www.cs.trinity.edu/~joldham0>Oldham</a>)<br>
+<br>
+<a name=cs3353>
+<a href="cs357">CS3353 Graphics</a> (<a href=http://www.cs.trinity.edu/~jhowland>Howland</a>)<br>
+<br>
+<a href="http://www.cs.trinity.edu/~meggen/Classes/3366/">CS3366 Introduction to Parallel and Distributed Processing</a> (<a href=http://www.cs.trinity.edu/~meggen>Eggen</a>)<br>
+<a href="http://www.cs.trinity.edu/~bmassing/CS3366/">
+ CS3366 Introduction to Parallel and Distributed Processing</a>
+(<a href=http://www.cs.trinity.edu/~bmassing>Massingill</a>)<br>
+<br>
+<a href="http://www.cs.trinity.edu/~bbateman/cs3368/">
+ CS3368 Principles of Programming Languages</a>
+(<a href=http://www.cs.trinity.edu/~bbateman>Bateman</a>)<br>
+<br>
+<a href="http://www.cs.trinity.edu/~bmassing/CS3190/">
+CS3190 Unix Power Tools Directed Study</a>
+(<a href=http://www.cs.trinity.edu/~bmassing>Massingill</a>)<br>
+<a href="http://www.cs.trinity.edu/~bmassing/CS3390/">
+CS3390 Java Directed Study</a>
+(<a href=http://www.cs.trinity.edu/~bmassing>Massingill</a>)<br>
+<a href="http://www.cs.trinity.edu/~bmassing/CS4320/">
+<br>
+CS4320 Principles of Operating Systems</a>
+(<a href=http://www.cs.trinity.edu/~bmassing>Massingill</a>)<br>
+<a href="http://www.cs.trinity.edu/~joldham0/4320/">CS4320 Principles of Operating Systems</a> (<a href=http://www.cs.trinity.edu/~joldham0>Oldham</a>)<br>
+<br>
+<a name=cs4353>
+<a href="cs358">CS4353 Advanced Graphics</a> (<a href=http://www.cs.trinity.edu/~jhowland>Howland</a>)<br>
+<br>
+<a href="http://www.cs.trinity.edu/~gpitts/cs4385/">CS4385 Senior Software Project I</a> (<a href=http://www.cs.trinity.edu/~gpitts>Pitts</a>)<br>
+<a href="http://www.cs.trinity.edu/About/The_Courses/cs4285/">CS4385 Senior Software Project I</a> (<a href=http://www.cs.trinity.edu/~jhowland>Howland</a>)<br>
+<br>
+<a href="http://www.cs.trinity.edu/~gpitts/cs4386/">CS4386 Senior Software Project II</a> (<a href=http://www.cs.trinity.edu/~gpitts>Pitts</a>)<br>
+<a href="http://www.cs.trinity.edu/About/The_Courses/cs4286/">CS4386 Senior Software Project II</a> (<a href=http://www.cs.trinity.edu/~jhowland>Howland</a>)<br>
+<br>
+<a name=cs3291>
+<a href="cs3291.linux">CS3291 Linux Seminar</a> (<a href=http://www.cs.trinity.edu/~jhowland>Howland</a>, <a href=http://www.cs.trinity.edu/~akonstam>Konstam</a>)<br>
+<a href="cs179h">CS3291 J Seminar</a> (<a href=http://www.cs.trinity.edu/~jhowland>Howland</a>)<br>
+<a href="cs3291.java">CS3291 Java Seminar</a> (<a href=http://www.cs.trinity.edu/~jhowland>Howland</a>)<br>
+<a href="http://www.cs.trinity.edu/~bmassing/Classes/CS3291_1999fall/HTML/">CS3291 Java with Internet Applications</a> (<a href=http://www.cs.trinity.edu/~bmassing>Massingill</a>)<br>
+<a href="http://www.cs.trinity.edu/~bmassing/Classes/CS3291_2004fall/HTML/">CS3291 Unix System Administration</a> (<a href=http://www.cs.trinity.edu/~bmassing>Massingill</a>)<br>
+<br>
+<a name=cs3194>
+<a href="http://www.cs.trinity.edu/About/The_Courses/cs_194/">CS_194 Professional, Ethics, Design Seminar</a> (<a href=http://www.cs.trinity.edu/~bmassing>Massingill</a>, <a href=http://www.cs.trinity.edu/~jhowland>Howland</a>)<br>
+<br>
+<a name=cs3294>
+<a href="http://www.cs.trinity.edu/~bmassing/CS3294/">
+CS3294 Seminar -- Unix Power Tools</a>
+(<a href=http://www.cs.trinity.edu/~bmassing>Massingill</a>)<br><br>
+<a name=cs3394>
+<a href="http://www.cs.trinity.edu/~gmeyer/cs3394.hci">CS3394 Human Computer Interaction</a> (<a href=http://www.cs.trinity.edu/~jhowland>Howland</a>, <a href=http://www.trinity.edu/gmeyer>Meyer</a>)<br>
+<a href="http://www.cs.trinity.edu/About/The_Courses/history/">Computer History Seminar</a> (<a href=http://www.cs.trinity.edu/~jhowland>Howland</a>)<br>
+</menu>
+</font color>
+
+</td>
+</tr>
+</table>
+<br>
+<hr><table>
+<!--
+<td align=center width=5%> <img src=/Pictures/tu-seal.gif></td>
+<td align=center width=5%> <img src=/Pictures/TU_FS_WEB.gif></td>
+-->
+<td align=center width=5%> <a href=http://www.trinity.edu><img src=/Pictures/TU_FS_CT_WEB_small.gif alt="Trinity University" border=none></a></td>
+<td align=left width=35%>
+<p><a href=/site-index.cgi> Site Index</a><br>
+<a href="mailto:webmaster@www.cs.trinity.edu">Comments or Suggestions</a><br>
+<a href=http://www.cs.trinity.edu>Computer Science Department</a><br>
+<a href=http://www.trinity.edu>Trinity University</a><br>
+<a href=http://www.trinity.edu/departments/public_relations/tour/map/color_campus_map.pdf>One Trinity Place</a><br>
+<a href=http://www.mysa.com/>San Antonio, Texas</a>  78212-7200<br>
+voice:  (210) 999-7480<br>
+fax:  (210) 999-7477<p>
+</td>
+<!--
+<td align=right> <a href=http://www.google.com/search?q=site%3Awww.cs.trinity.edu&hl=en&num=10&lr=&ft=i&cr=&safe=images&tbs=#sclient=psy&hl=en&lr=&q=site:www.cs.trinity.edu&aq=f&aqi=&aql=&oq=&pbx=1&bav=on.2,or.&fp=ef34c9a9ed856910><img src=/Pictures/google.gif alt="google site search" width=69 height=27 border=none></a>
+-->
+<td align=right> <a href=http://www.google.com/search?q=site%3Awww.cs.trinity.edu&hl=en&num=10&lr=&ft=i&cr=&safe=images&tbs=#sclient=psy&hl=en&lr=&q=site:www.cs.trinity.edu&aq=f&aqi=&aql=&oq=&pbx=1&bav=on.2,or.&fp=ef34c9a9ed856910><img src=/Pictures/google.gif alt="Trinity google site search" width=69 height=27 border=none></a>
+<br><a href=https://www.cs.trinity.edu/webmail/>CS WebMail</a>
+<br><a href=http://www.cs.trinity.edu/mailman/listinfo/>CS ListServer</a></td>
+</table></body></html>
