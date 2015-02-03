@@ -1,0 +1,22 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+Cylinder	./Cylinder.cpp	/^    Cylinder(double h, double r){$/;"	f	class:Cylinder	access:public	signature:(double h, double r)
+Cylinder	./Cylinder.cpp	/^class Cylinder{$/;"	c	file:
+PI	./Cylinder.cpp	/^    double PI  = 22\/7;$/;"	m	class:Cylinder	file:	access:private
+calculateVolume	./Cylinder.cpp	/^    double calculateVolume(){$/;"	f	class:Cylinder	access:public	signature:()
+getHeight	./Cylinder.cpp	/^    double getHeight(){$/;"	f	class:Cylinder	access:public	signature:()
+getRadius	./Cylinder.cpp	/^    double getRadius(){$/;"	f	class:Cylinder	access:public	signature:()
+height	./Cylinder.cpp	/^    double height;$/;"	m	class:Cylinder	file:	access:private
+isUniqueChars	./ctc.cpp	/^bool isUniqueChars(string str){$/;"	f	signature:(string str)
+main	./ctc.cpp	/^int main(){$/;"	f	signature:()
+main	./main.cpp	/^int main(){$/;"	f	signature:()
+radius	./Cylinder.cpp	/^    double radius;$/;"	m	class:Cylinder	file:	access:private
+runDisplay	./ctc.cpp	/^void runDisplay(){$/;"	f	signature:()
+setHeight	./Cylinder.cpp	/^    void setHeight(double h){$/;"	f	class:Cylinder	access:public	signature:(double h)
+setRadius	./Cylinder.cpp	/^    void setRadius(double r){$/;"	f	class:Cylinder	access:public	signature:(double r)
+validDouble	./main.cpp	/^bool validDouble(string s){$/;"	f	signature:(string s)
+~Cyinder	./Cylinder.cpp	/^    ~Cyinder(){$/;"	f	class:Cylinder	access:public	signature:()
