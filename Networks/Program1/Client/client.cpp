@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 	
 	port = atoi(argv[2]);
 	
- // port = 15000; Uncomment for testing purposes.
+    // port = 15000; Uncomment for testing purposes.
 	
     // Error check the port number.
 	if(port <= 10000) 
@@ -71,13 +71,11 @@ int main(int argc, char* argv[])
 		exit(1);
 	}
 	
-    //Start interface 
+    //Start  program interface 
     interface(message,sockfd);
     
     //keep waiting on user commands then close socket. 
     close(sockfd);
-
-    
 }
 
 /*
@@ -108,99 +106,88 @@ void interface(char message[1024], int sockfd){
     cout << "-----------------------------------\n";
    string input ="";
    while(!stopWorking){
-    getline(cin,input);
-    
-    //get first four characters of input
-    string command = input.substr(0,4);
-    
-	if(command == "PUT:"){        
-	      string filename = input.substr(4);
-          char* file = const_cast<char*>(filename.c_str());
-		  //call functions to retrieve file
+        getline(cin,input);
+        //get first four characters of input
+        string command = input.substr(0,4);
+        if(command == "PUT:"){        
+            string filename = input.substr(4);
+            char* file = const_cast<char*>(filename.c_str());
+            //call functions to retrieve file
 
-         ifstream localFile(file);
-         localFile.seekg(0,localFile.end);
-         long size = localFile.tellg();
-         localFile.seekg(0);
+            ifstream localFile(file);
+            localFile.seekg(0,localFile.end);
+            long size = localFile.tellg();
+            localFile.seekg(0);
 
-         char* buffer = new char[size];
+            char* buffer = new char[size];
 
-         if(localFile.failbit){
-           localFile.read(buffer,size);
-         }else{
-            cout << "Unable to open file"<<endl;
-            break;
-         }
+            if(localFile.failbit){
+              localFile.read(buffer,size);
+            }else{
+               cout << "Unable to open file"<<endl;
+               break;
+            }
+            //Append filename in front of buffer
+            char* msgOne = new char[strlen(file)+1];
+            memcpy(msgOne,file,strlen(file)+1);
 
-       //Append filename in front of buffer
-       char* msgOne = new char[strlen(file)+1];
-       memcpy(msgOne,file,strlen(file)+1);
-
-       char* fullMsg = new char[strlen(msgOne) + strlen(buffer)+1];
-       strcat(fullMsg,msgOne);
-       strcat(fullMsg,":");
-       strcat(fullMsg,buffer);
-         
-          
-          //send msg to server for file.
-          //Send command message
-            message = fullMsg;
-			if((msgSize = send(sockfd, message, strlen(message), 0)) < 0) 
-         	{
-        		cerr << "Send error." << endl;
-        	}
-	
-        
-        //delete memory from buffer
-        delete[] buffer;
-    
-    }else if (command == "GET:"){
-		//string filename = input.substr(4);
-
-        char *charInput = const_cast<char*>(input.c_str());
-
-         if((msgSize = send(sockfd, charInput, strlen(charInput),0)) < 0){
-             cerr << "Request Error" << endl;
-         }
-        
-         if((msgSize = recv(sockfd, output, 1023, 0)) < 0){
-             cerr << "Receive Error" <<endl;
-         }else {
-		cout << "File rceived" << endl;
-	 }
-
-       
-	//write output to file
-
-	char* pch;
-    pch = strchr(output,':');
-    int position = 0;
-    position = pch-output+1;
-
-	char filename[position];
-        
-        for(int i = 0; i< position-1;i++){
-           //if(i<position){
-            filename[i] = output[i];
-           //}else 
-           if(i == position-2){
-                filename[i+1] = '\0';
-           }           
-        }
-          //create file to put on server
-                
-         ofstream outputFile(filename);
-          for(int i =0;i<strlen(output)-1;i++){
-            if(i >= position ){
-                outputFile << output[i];
+            char* fullMsg = new char[strlen(msgOne) + strlen(buffer)+1];
+            strcat(fullMsg,msgOne);
+            strcat(fullMsg,":");
+            strcat(fullMsg,buffer);
+              
+            //send msg to server for file.
+            message = fullMsg; //message for put operation is filename:<contents of file>
+            if((msgSize = send(sockfd, message, strlen(message), 0)) < 0) 
+            {
+               cerr << "Send error." << endl;
             }
 
-          }
+            //delete memory from buffer
+            delete[] buffer;
+        }else if (command == "GET:"){
+            //string filename = input.substr(4);
 
-	}else if(command == "QUIT"){
-		//quit on anything else
-		stopWorking = true;	
-	}
-        
+            char *charInput = const_cast<char*>(input.c_str());
+
+            if((msgSize = send(sockfd, charInput, strlen(charInput),0)) < 0){
+                cerr << "Request Error" << endl;
+            }
+
+            if((msgSize = recv(sockfd, output, 1023, 0)) < 0){
+                cerr << "Receive Error" <<endl;
+            }else {
+            cout << "File rceived" << endl;
+            }
+            //write output to file
+
+            char* pch;
+            pch = strchr(output,':');
+            int position = 0;
+            position = pch-output+1;
+
+            char filename[position];
+                
+            for(int i = 0; i< position-1;i++){
+               //if(i<position){
+                filename[i] = output[i];
+               //}else 
+               if(i == position-2){
+                    filename[i+1] = '\0';
+               }           
+            }
+              //create file to put on server
+                    
+             ofstream outputFile(filename);
+              for(int i =0;i<strlen(output)-1;i++){
+                if(i >= position ){
+                    outputFile << output[i];
+                }
+
+              }
+        }else if(command == "QUIT"){
+            //quit on anything else
+            stopWorking = true;	
+        }
    }
 }

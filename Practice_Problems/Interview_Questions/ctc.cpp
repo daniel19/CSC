@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
+#include <algorithm>
 #include <string>
 using namespace std;
 
@@ -16,12 +17,17 @@ string convertToBinary(int number){
 
 bool isUniqueChars(string str){
     int checker =0;
+    
+    //effectively an iteration
+    transform(str.begin(), str.end(), str.begin(), ::tolower);//converts input string to lowercase
+   
     for(int i=0; i < str.length(); i++){
         int val = str[i] - 'a';
-        cout << "String: " << str[i] << endl;
+/*        cout << "String: " << str[i] << endl;
         cout << "Value: " << val << endl;
         cout << "Bits: " << convertToBinary(val) << endl;
-        if((checker & (1 << val)) >0) return false;
+ 
+*/       if((checker & (1 << val)) >0) return false;
         checker |= (1 << val);
     }
     return true;
@@ -35,6 +41,7 @@ bool runDisplay(){
     cin >> choice;
     switch(choice){
         case 1:
+        {    
             cout << "Please enter in your word."<< endl;
             string input ="";
             getline(cin.ignore(), input);
@@ -44,6 +51,16 @@ bool runDisplay(){
                 cout << "Input has no unique characters." << endl;
             }
             break;
+        }
+        case 2:
+        {
+            bool running = true;
+            while(running){
+                cout << "Select which string operation you want to run" << endl;
+
+            }
+            break;
+        }
     }
 
     cout << endl << "Do you want to continue?(y/n)" << endl;

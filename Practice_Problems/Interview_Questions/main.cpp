@@ -28,7 +28,6 @@ int main(){
     
     bool keepRunning = true;
     while (keepRunning) { 
-    
         cout << "----------------------------------------------------------" << endl;
         cout << "| Calculate the volume of a right circular cylinder.    |" << endl;
         cout << "----------------------------------------------------------" << endl;
@@ -85,7 +84,6 @@ int main(){
             keepRunning = false;
         }//Start over if userContinue is not 'n'
         cout << endl << endl;
-        
     }
     return 0;
 }

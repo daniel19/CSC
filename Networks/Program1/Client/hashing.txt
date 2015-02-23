@@ -1,0 +1,5 @@
+Testing hashing text file
+
+8. Hashing with Chaining. 
+
+MIT OpenCourseware
