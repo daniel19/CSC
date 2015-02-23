@@ -96,97 +96,80 @@ int main(int argc, char* argv[])
 
 void parseMessage(char* buffer, int clisock)
 {
-    
     char* pch;
     pch = strchr(buffer,':');
-    int position = 0;
-    position = pch-buffer+1;
-    
+    const int position = pch-buffer+1;
+    int position2 = position; 
 
     char command[4];
-    string s = "GET:";
-    char *commandS = const_cast<char*>(s.c_str());
+    const char *commandS = "GET:"; 
     for(int j=0;j< 4;j++){
         command[j] = buffer[j];
-	if(j == 3){
-		command[j+1] = '\0';
-	}
+        if(j == 3){
+            command[j+1] = '\0';
+        }
     }
-	
-	
    
-
+    cout <<"Position Two: " << position2 << endl; 
     if(!strcmp(commandS, command)){
         //Get command recieved
         cout << "Get command received" <<endl;
 		
-	//char filename[strlen(buffer)-position];
-	string filename;
-	for(int j=0; j < strlen(buffer); j++){
-	   if(j >= position){
-	   	filename += buffer[j];
-		
-	   }
-		
-	}
-	
-
+        //char filename[strlen(buffer)-position];
+        string filename;
+        for(int j=0; j < strlen(buffer); j++){
+           if(j >= position){
+               filename += buffer[j];
+           }
+        }
         //send file to client
-	char* file = const_cast<char*>(filename.c_str());
-       ifstream localFile(file);
-         localFile.seekg(0,localFile.end);
-         long size = localFile.tellg();
-         localFile.seekg(0);
+        char* file = const_cast<char*>(filename.c_str());
+        ifstream localFile(file);
+        localFile.seekg(0,localFile.end);
+        long size = localFile.tellg();
+        localFile.seekg(0);
 
-         char* buffer = new char[size];
+        char* buffer = new char[size];
 
-         if(localFile.failbit){
+        if(localFile.failbit){
            localFile.read(buffer,size);
-         }else{
+        }else{
             cout << "Unable to open file"<<endl;
             return;
-         }
+        }
+        //Append filename in front of buffer
+        char* msgOne = new char[strlen(file)+1];
+        memcpy(msgOne,file,strlen(file)+1);
 
-       //Append filename in front of buffer
-       char* msgOne = new char[strlen(file)+1];
-       memcpy(msgOne,file,strlen(file)+1);
-
-       char* fullMsg = new char[strlen(msgOne) + strlen(buffer)+1];
-       strcat(fullMsg,msgOne);
-       strcat(fullMsg,":");
-       strcat(fullMsg,buffer);
-         
-          
-          //send msg to server for file.
-          //Send command message
+        char* fullMsg = new char[strlen(msgOne) + strlen(buffer)+1];
+        strcat(fullMsg,msgOne);
+        strcat(fullMsg,":");
+        strcat(fullMsg,buffer);
+        //send msg to server for file.
+        //Send command message
             
-	int msgSize;
-			if((msgSize = send(clisock, fullMsg, strlen(fullMsg), 0)) < 0) 
-         	{
-        		cerr << "Send error." << endl;
-        	}
+        int msgSize;
+        if((msgSize = send(clisock, fullMsg, strlen(fullMsg), 0)) < 0) 
+        {
+            cerr << "Send error." << endl;
+        }
     }else{
         char filename[position];
-        
+
         for(int i = 0; i< position-1;i++){
-           //if(i<position){
             filename[i] = buffer[i];
-           //}else 
            if(i == position-2){
                 filename[i+1] = '\0';
            }           
         }
-          //create file to put on server
-                
-         ofstream outputFile(filename);
-          for(int i =0;i<strlen(buffer)-1;i++){
-            if(i >= position && i < strlen(buffer)){
-                outputFile << buffer[i];
-            }
-
+        cout << "filename: " << filename << endl;
+        //create file to put on server
+        ofstream outputFile(filename);
+        for(int i =0;i<strlen(buffer)-1;i++){
+          if(i >= position && i < strlen(buffer)){
+               outputFile << buffer[i];
           }
+        }
     }
-        
-   
 }
 
