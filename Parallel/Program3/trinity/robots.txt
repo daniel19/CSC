@@ -1,6 +1,0 @@
-# As per http://info.webcrawler.com/mak/projects/robots/robots.html
-
-User-agent:	*
-Disallow:	/cgi-bin/		# Prevent accidents
-Disallow:	/htbin/			# Likewise
-Disallow:	/local-only/		# Local sysadmin stuff
