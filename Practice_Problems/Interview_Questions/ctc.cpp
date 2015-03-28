@@ -9,6 +9,31 @@
 
 using namespace std;
 
+void reverseCstring(const char* input){
+   //reverse string without loops  
+   if(*input){
+       reverseCstring(input+1);
+       printf("%c", *input);
+   }
+}
+
+unsigned long factorial(int n){
+    if(n==0)
+        return 1;
+    else
+        return n*factorial(n-1);
+}
+unsigned long nChoosek(int n, int k){//Binomial Coeffecient
+    // non-negative
+    if(n<0)
+        n*=-1;
+    else if(k<0)
+        k*=-1;
+    
+    if(n < k) return 0;
+    return (factorial(n)/(factorial(k)*factorial(n-k)));
+}
+
 void shredded(string filename, string delimeter){
     FileIO *reader = new FileIO(filename, delimeter);
     vector<string> tokenList = reader->getTokens();    
@@ -49,7 +74,7 @@ bool isUniqueChars(string str){
 
 bool runDisplay(){
     cout << "What operation would you like to run." << endl;
-    cout << "1)UniqueChars\n2)String ops\n3)FileIO" << endl;
+    cout << "1)UniqueChars\n2)String ops\n3)FileIO\n4)Binomial Calculator\n5)Reverse C style string" << endl;
     
     int choice = 0;
     cin >> choice;
@@ -81,6 +106,28 @@ bool runDisplay(){
             getline(cin.ignore(), filename);
             printFile(filename);
             shredded(filename, "|");
+        }
+        case 4:
+        {
+            int n,k;
+            cout << "Please enter n: ";
+            cin >> n;
+            cout << "Please enter k: ";
+            cin >>k;  
+            
+            int result = nChoosek(n,k);
+            
+            printf("Your result is %d\n", result); 
+
+        }
+        case 5:
+        {
+            string line;
+            cout << "Enter in input string: ";
+            getline(cin.ignore(), line);
+            const char* inputString = line.c_str();
+            cout << "Printing reverse of entered string: " << endl;
+            reverseCstring(inputString);
         }
     }
     

@@ -49,10 +49,11 @@ vector<string> FileIO::getTokens(){
 string FileIO::readLine(){
     char temp[256];
     if(setting == FOR_READING){
-        if(!fileReader.eof()){
+        if(!endOfFile){
             fileReader.getline(temp, 1000);
+            if(fileReader.eof())
+                endOfFile = true;
         } else{
-            endOfFile = true;
             return "";
         }
     }else{ 
