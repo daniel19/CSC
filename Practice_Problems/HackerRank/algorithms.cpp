@@ -6,7 +6,7 @@
 #include <ctime>
 #include <boost/multiprecision/cpp_int.hpp>
 #include "../Library/FileIO.h"
-#include "../Library/Sorting.cpp"
+#include "../Library/Sorting.h"
 
 using namespace std;
 
@@ -69,9 +69,13 @@ bool display(){
                     list.push_back(atoi(line.c_str()));
             }
             cout << "List size is: " << list.size() << endl;
-           
+           vector<int> copyList = list; 
+            cout << "List size is: " << copyList.size() << endl;
             if(list.size() >0){ 
+               // Sorting Sorter = Sorting::getInstance(); 
                 Sorting *Sorter; 
+                cout << &Sorter << endl;
+                
                 clock_t timer;       
                 cout << "Insertion Sort\n" << endl;
                 timer = clock();
@@ -80,7 +84,7 @@ bool display(){
                 
                 cout << "Bubble Sort\n" << endl;
                 timer = clock();
-                Sorter->bubbleSort(list); 
+                Sorter->bubbleSort(list);
                 cout << "\nTime spent on bubbleSort: " << (float)(clock() - timer)/CLOCKS_PER_SEC << endl; 
                 
                 cout << "\nQuickSort\n" << endl;
@@ -92,6 +96,13 @@ bool display(){
                 timer = clock();
                 Sorter->quickSort_InPlace(list);
                 cout << "\nTime spent on quickSort_InPlace: " << (float)(clock() - timer)/CLOCKS_PER_SEC << endl; 
+                
+                cout << "\nMergeSort\n" << endl;
+                timer = clock();
+                Sorter->mergeSort(copyList);
+                cout << "\nTime spent on quickSort_InPlace: " << (float)(clock() - timer)/CLOCKS_PER_SEC << endl; 
+                
+                printVector(copyList);
             }
             break;
         }

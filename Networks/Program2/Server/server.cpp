@@ -26,8 +26,6 @@ vector<chatPerson> chatList;
 vector<string> messageList;
 
 
-
-
 int main(int argc, char* argv[]) 
 {
     int success, on=1, serverSoc=-1, newSoc=-1;
@@ -280,13 +278,13 @@ bool parseMessage(char* buffer, int clisock)
       //char outputList[1024];
       string outputList;
       for(int i =0; i < chatList.size(); i++){
-          stringstream ss;
-          ss << i+1;
-          
-          outputList.append(ss.str());
-          outputList.append(":");
-         outputList.append(chatList[i].getName());
-         outputList.append("\n");
+        stringstream ss;
+        ss << i+1;
+
+        outputList.append(ss.str());
+        outputList.append(":");
+        outputList.append(chatList[i].getName());
+        outputList.append("\n");
          //cout << outputList << endl;
       }
       char* sendList = const_cast<char*>(outputList.c_str());

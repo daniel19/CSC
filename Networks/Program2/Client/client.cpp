@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string.h>
+#include <cstring>
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -14,7 +15,6 @@ using namespace std;
 void interface(char messeage[1024], int sockfd);
 
 int main(int argc, char* argv[]) 
-//int main()
 {
     int clientSocket, port;
     struct sockaddr_in server_address;
@@ -49,7 +49,6 @@ int main(int argc, char* argv[])
         exit(1);
         }
     char message[1024];
-
     interface(message, clientSocket);
 
     
