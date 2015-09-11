@@ -1,0 +1,14 @@
+#Compiled source #
+*.exe
+*.o
+*.out
+*.swp
+
+#Packages#
+*.zip
+*.tar
+*.DS_Store
+*.dSYM
+
+#Folders
+Futurex/
