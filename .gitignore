@@ -12,3 +12,9 @@
 
 #Folders
 Futurex/
+=======
+#Binary files
+*.exe
+*.o
+*.out
+
