@@ -12,9 +12,6 @@
 
 #Folders
 Futurex/
-=======
-#Binary files
-*.exe
-*.o
-*.out
+Interview_Questions
+*.dSYM
 
