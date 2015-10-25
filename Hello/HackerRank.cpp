@@ -92,6 +92,15 @@ namespace HackerRank{
         std::cout << std::endl;
     }
 
+    static bool isSingleDigit(int number){
+        bool result = false;
+        if(number < 0)
+            number*=-1;
+        if(number > 0 && number < 10)
+            return true;
+        return result;   
+    }
+
     static void timeConversion(std::vector<std::string> times){
         std::vector<std::string> result;
         for(std::string time : times){
@@ -119,10 +128,14 @@ namespace HackerRank{
                     assert(number <= 12);
                     if(dayOrNight == "PM")
                         number +=12;
-                    else if(dayOrNight == "AM" && number ==1)
+                    else if(dayOrNight == "AM" && number ==12)
                         number = 0;
 
                     quadrant++;
+                }
+                //check if number is a single digit
+                if(isSingleDigit(number)){
+                    r += "0";
                 }
                 r += std::to_string(number);
                 r += ":";
@@ -133,5 +146,6 @@ namespace HackerRank{
         }
         printVector(result, ColorCode::FG_GREEN, ColorCode::FG_CLOSE);
     }
+
 }
 #endif
