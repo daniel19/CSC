@@ -55,12 +55,9 @@ flags = [
 # This path will only work on OS X, but extra paths that don't exist are not
 # harmful
 '/System/Library/Frameworks/Python.framework/Headers',
-'-isystem',
-'/usr/include/',
-'-isystem',
-'/usr/include/c++/4.2.1/',
-'-isystem',
-'/usr/local/include/',
+'-isystem', '/usr/include/',
+'-isystem', '/usr/include/c++/4.2.1/',
+'-isystem', '/usr/local/include/',
 '-isystem', '/opt/local/clang/include',
 '-isystem', './Practice_Problems/Interview_Questions/'
 ]

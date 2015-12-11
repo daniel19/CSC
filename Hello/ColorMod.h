@@ -24,8 +24,6 @@ public:
         return os << "\033[" << mod.code << "m";
        else
         return os << "\033[" << mod.numberCode << "m";
-
     }
-
 };
 #endif
