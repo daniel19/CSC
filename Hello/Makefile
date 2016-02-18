@@ -16,7 +16,7 @@ run:
 	./Hello.exe
 
 clean:
-	rm Hello *.o
+	rm -rv Hello.* *.o
 
 debug:
 	$(DEBUG) Hello

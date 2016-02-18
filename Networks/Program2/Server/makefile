@@ -1,12 +1,8 @@
-server: server.o chat.o
-	g++ -g -O0 server.o chat.o -o server
+CCFLAGS := g++ -g -O0 -Wall -pedantic 
 
-chat.o:chatPerson.cpp chatPerson.h
-	g++ -c -g -O0 chatPerson.cpp -o chat.o
-
-server.o: server.cpp
-	g++ -c -g -O0 server.cpp -o server.o
+server: server.cpp chatPerson.cpp
+	$(CCFLAGS) server.cpp chatPerson.cpp -o server
 
 clean:
-	rm *.o
+	rm *.o server
 

@@ -66,9 +66,7 @@ namespace HackerRank{
                 size_t position = delimeters.find_first_of(character, 0);
                 auto cp = delimeters.substr(position+1, delimeters.length());
 
-                if(token.find(cp) != std::string::npos){
-                    //skipping
-                }else{
+                if(token.find(cp) == std::string::npos){
                     size_t i = original.find(token);
                     if(i != std::string::npos){
                         original.erase(i, token.length());
@@ -93,12 +91,8 @@ namespace HackerRank{
     }
 
     static bool isSingleDigit(int number){
-        bool result = false;
-        if(number < 0)
-            number*=-1;
-        if(number > 0 && number < 10)
-            return true;
-        return result;   
+        if(number < 0) number*=-1;
+        return number > 0 && number < 10;   
     }
 
     static void timeConversion(std::vector<std::string> times){
