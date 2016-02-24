@@ -4,7 +4,7 @@ DEBUG := gdb
 
 ifeq ($(UNAME), Darwin)
 	LIBFLAGS := -I/usr/local/lib
-	BOOSTFLAGS:= -I/usr/local/include/ -I/usr/local/Cellar/boost/1.58.0
+	BOOSTFLAGS:= -I/usr/local/include/ -I/usr/local/Cellar/boost/*
 	CCFLAGS := g++ $(BOOSTFLAGS) $(LIBFLAGS)  -std=c++11 -g -Wall 
 	DEBUG := lldb
 endif

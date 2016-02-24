@@ -3,6 +3,7 @@
 *.o
 *.out
 *.swp
+*.pyc
 
 #Packages#
 *.zip
