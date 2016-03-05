@@ -18,7 +18,7 @@ int main(int argc, char* argv[]){
     int rank;
     int thread_count;
 
-   int* currentGen;
+    int* currentGen;
     int* spareOne;
     int* spareTwo;
     int* distribution;
