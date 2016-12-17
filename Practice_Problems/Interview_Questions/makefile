@@ -1,4 +1,4 @@
-app.out: ../Library/FileIO.cpp ../Library/ FileIO.h ctc.cpp
+app.out: ../Library/FileIO.cpp ../Library/FileIO.h ctc.cpp
 	g++ -g -Wall ../Library/FileIO.cpp ctc.cpp -o app.out
 
 clean:
